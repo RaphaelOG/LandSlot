@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Land Slot Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .slot {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px;
+            transition: all 0.3s;
+            height: 100%;
+        }
+        .slot:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .available {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+        .sold {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+        .pending {
+            background-color: #fff3cd;
+            border-color: #ffeeba;
+        }
+        .reserved {
+            background-color: #d1ecf1;
+            border-color: #bee5eb;
+        }
+        .upload-area {
+            border: 2px dashed #ccc;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+        .status-filter {
+            margin-bottom: 20px;
+        }
+        .map-preview {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-5">
+        <h1 class="text-center mb-4">Land Slot Management</h1>
+        
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="upload-area">
+                    <h4>Upload Map Image</h4>
+                    <form method="POST" action="/upload" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <input class="form-control" type="file" name="file" accept="image/*" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Generate Land Slots</button>
+                    </form>
+                </div>
+                
+                {% if has_image %}
+                <div class="card mt-3">
+                    <div class="card-body text-center">
+                        <a href="/generate_image" class="btn btn-success mb-2">Download Current Map</a>
+                        <p class="text-muted">Map will maintain original dimensions and format</p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Map Preview</h5>
+                        {% if has_image %}
+                            <img src="/generate_image" class="map-preview img-fluid" alt="Current Map">
+                        {% else %}
+                            <p class="text-muted">No map uploaded yet</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="status-filter btn-group mb-4">
+            <a href="/?status=all" class="btn btn-outline-secondary {% if current_status == 'all' %}active{% endif %}">All</a>
+            <a href="/?status=available" class="btn btn-outline-success {% if current_status == 'available' %}active{% endif %}">Available</a>
+            <a href="/?status=pending" class="btn btn-outline-warning {% if current_status == 'pending' %}active{% endif %}">Pending</a>
+            <a href="/?status=sold" class="btn btn-outline-danger {% if current_status == 'sold' %}active{% endif %}">Sold</a>
+        </div>
+
+        <div class="row">
+            {% for slot in land_slots %}
+            <div class="col-md-4 mb-4">
+                <div class="slot {{ slot.status }}">
+                    <h4>Plot {{ slot.x }},{{ slot.y }}</h4>
+                    <p><strong>Status:</strong> <span class="badge bg-{{ 'success' if slot.status == 'available' else 'warning' if slot.status == 'pending' else 'danger' if slot.status == 'sold' else 'info' }}">{{ slot.status|upper }}</span></p>
+                    <p><strong>Price:</strong> {{ slot.price }}</p>
+                    <p><strong>ID:</strong> {{ slot.id }}</p>
+                    
+                    <div class="mt-3">
+                        {% if slot.status == 'available' %}
+                            <a href="/reserve/{{ slot.id }}" class="btn btn-sm btn-warning">Reserve</a>
+                        {% elif slot.status == 'pending' %}
+                            <button class="btn btn-sm btn-success">Confirm Purchase</button>
+                            <button class="btn btn-sm btn-outline-secondary">Cancel</button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
