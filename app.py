@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, send_file, render_template, request, redirect, url_for, flash
+from flask import Flask, jsonify, send_file, render_template, request, redirect, url_for, flash, session
 from PIL import Image, ImageDraw, ImageFont
 import io
 import os
@@ -8,7 +8,7 @@ from datetime import datetime
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg', 'gif'}
-app.secret_key = 'your-secret-key-here'  # Needed for session management
+app.secret_key = 'your_secret_key_here'  # Needed for session
 
 # Ensure upload folder exists
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
@@ -70,6 +70,8 @@ def create_land_slots_from_image(image_path):
 def home():
     status_filter = request.args.get('status', 'all')
     search_query = request.args.get('search', '').strip()
+    page = int(request.args.get('page', 1))
+    per_page = 9
     
     # Filter by status
     if status_filter == 'all':
@@ -85,11 +87,32 @@ def home():
                          search_query.lower() in slot['price'].lower() or
                          (slot['buyer_info'] and search_query.lower() in slot['buyer_info']['name'].lower())]
     
+    total_slots = len(filtered_slots)
+    total_pages = (total_slots + per_page - 1) // per_page
+    start = (page - 1) * per_page
+    end = start + per_page
+    paginated_slots = filtered_slots[start:end]
+    
+    # Summary statistics for all slots (not just filtered)
+    all_slots = land_slots
+    total_count = len(all_slots)
+    available_count = sum(1 for slot in all_slots if slot['status'] == 'available')
+    pending_count = sum(1 for slot in all_slots if slot['status'] == 'pending')
+    sold_count = sum(1 for slot in all_slots if slot['status'] == 'sold')
+    reserved_count = sum(1 for slot in all_slots if slot['status'] == 'reserved')
+
     return render_template('index.html', 
-                         land_slots=filtered_slots,
+                         land_slots=paginated_slots,
                          current_status=status_filter,
                          search_query=search_query,
-                         has_image=current_image_path is not None)
+                         has_image=current_image_path is not None,
+                         page=page,
+                         total_pages=total_pages,
+                         total_count=total_count,
+                         available_count=available_count,
+                         pending_count=pending_count,
+                         sold_count=sold_count,
+                         reserved_count=reserved_count)
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
@@ -264,6 +287,43 @@ def generate_image():
     
     except Exception as e:
         return f"Error generating image: {str(e)}", 500
+
+@app.route('/login')
+def login():
+    return render_template('login.html')
+
+@app.route('/profile', methods=['GET', 'POST'])
+def profile():
+    if request.method == 'POST':
+        # Save user info to session
+        session['user'] = {
+            'avatar': request.form.get('avatar', ''),
+            'name': request.form.get('name', ''),
+            'email': request.form.get('email', ''),
+        }
+        return redirect(url_for('profile'))
+
+    # Example: Replace with real user data or session info in a real app
+    user = session.get('user', {
+        'avatar': '',
+        'name': '',
+        'email': '',
+    })
+    # Calculate user's reserved and sold plots
+    reserved_count = 0
+    sold_count = 0
+    for slot in land_slots:
+        if slot.get('buyer_info') and user.get('name') and slot['buyer_info'].get('name') == user['name']:
+            if slot['status'] == 'pending':
+                reserved_count += 1
+            elif slot['status'] == 'sold':
+                sold_count += 1
+    user['reserved_count'] = reserved_count
+    user['sold_count'] = sold_count
+    # Optionally, add owned_count and pending_count if you want
+    user['owned_count'] = reserved_count + sold_count
+    user['pending_count'] = reserved_count
+    return render_template('profile.html', user=user)
 
 if __name__ == '__main__':
     app.run(debug=True)

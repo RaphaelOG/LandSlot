@@ -27,466 +27,437 @@
         }
 
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #f8fafc;
             min-height: 100vh;
         }
 
         .main-container {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            box-shadow: var(--shadow-lg);
-            margin: 20px;
-            padding: 30px;
-            position: relative;
-            z-index: 1;
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+            margin: 32px auto;
+            padding: 0;
+            max-width: 1400px;
         }
 
         .hero-section {
             text-align: center;
-            margin-bottom: 40px;
-            padding: 40px 0;
-            background: linear-gradient(135deg, var(--primary-color), #1d4ed8);
-            border-radius: 15px;
-            color: white;
+            padding: 64px 32px 48px 32px;
+            background: linear-gradient(120deg, #f8fafc 60%, #e0e7ff 100%);
+            border-radius: 18px 18px 0 0;
             position: relative;
             overflow: hidden;
         }
-
-        .hero-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.1"/><circle cx="10" cy="60" r="0.5" fill="white" opacity="0.1"/><circle cx="90" cy="40" r="0.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
-        }
-
         .hero-section h1 {
+            font-weight: 800;
+            font-size: 3.2rem;
+            margin-bottom: 12px;
+            letter-spacing: 1px;
+            color: #22223b;
+        }
+        .hero-section p {
+            font-size: 1.25rem;
+            color: #64748b;
+            margin-bottom: 32px;
+        }
+        .hero-section .cta-btn {
+            background: linear-gradient(90deg, #0095f6 0%, #005bea 100%);
+            color: #fff;
+            border: none;
+            border-radius: 32px;
+            padding: 14px 40px;
+            font-size: 1.1rem;
             font-weight: 700;
-            font-size: 3rem;
-            margin-bottom: 10px;
-            position: relative;
-            z-index: 1;
+            box-shadow: 0 2px 8px rgba(0,149,246,0.08);
+            transition: background 0.2s, transform 0.2s;
+        }
+        .hero-section .cta-btn:hover {
+            background: linear-gradient(90deg, #0080e0 0%, #005bea 100%);
+            transform: translateY(-2px) scale(1.03);
         }
 
-        .hero-section p {
-            font-size: 1.2rem;
-            opacity: 0.9;
-            position: relative;
-            z-index: 1;
+        .stats-section {
+            background: #f3f4f6;
+            padding: 32px 0 16px 0;
+        }
+        .stats-grid {
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .stats-card {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            padding: 32px 28px;
+            min-width: 180px;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+        .stats-icon {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            color: #0095f6;
+        }
+        .stats-number {
+            font-size: 2.1rem;
+            font-weight: 700;
+            color: #22223b;
+        }
+        .stats-label {
+            color: #64748b;
+            font-weight: 500;
+            font-size: 1rem;
+            letter-spacing: 0.5px;
         }
 
         .upload-area {
-            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
-            border: 3px dashed var(--primary-color);
-            border-radius: 15px;
-            padding: 40px;
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            border: 2px dashed #0095f6;
+            padding: 48px 32px;
             text-align: center;
-            margin-bottom: 30px;
-            transition: all 0.3s ease;
+            margin-bottom: 32px;
+            transition: box-shadow 0.3s, border-color 0.3s;
             position: relative;
-            overflow: hidden;
         }
-
         .upload-area:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-lg);
-            border-color: #1d4ed8;
+            box-shadow: 0 6px 24px rgba(0,149,246,0.10);
+            border-color: #005bea;
         }
-
-        .upload-area::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(37, 99, 235, 0.1), transparent);
-            transform: rotate(45deg);
-            transition: all 0.6s ease;
-        }
-
-        .upload-area:hover::before {
-            transform: rotate(45deg) translate(70%, 70%);
-        }
-
         .upload-icon {
-            font-size: 3rem;
-            color: var(--primary-color);
-            margin-bottom: 20px;
+            font-size: 3.2rem;
+            color: #0095f6;
+            margin-bottom: 18px;
         }
-
-        .stats-card {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: var(--shadow);
-            transition: all 0.3s ease;
-            border: 1px solid var(--border-color);
-        }
-
-        .stats-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .stats-number {
-            font-size: 2.5rem;
+        .upload-area h4 {
             font-weight: 700;
-            margin-bottom: 5px;
+            color: #22223b;
+            margin-bottom: 8px;
+        }
+        .upload-area p {
+            color: #64748b;
+            margin-bottom: 24px;
+        }
+        .btn-primary-custom {
+            background: linear-gradient(90deg, #0095f6 0%, #005bea 100%);
+            color: #fff;
+            border: none;
+            border-radius: 32px;
+            padding: 12px 32px;
+            font-weight: 700;
+            font-size: 1rem;
+            transition: background 0.2s, transform 0.2s;
+        }
+        .btn-primary-custom:hover {
+            background: linear-gradient(90deg, #0080e0 0%, #005bea 100%);
+            transform: translateY(-2px) scale(1.03);
         }
 
-        .stats-label {
-            color: var(--secondary-color);
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            font-size: 0.9rem;
+        .slots-section {
+            background: #f8fafc;
+            padding: 32px 0 32px 0;
+            max-width: 1300px;
+            margin-left: auto;
+            margin-right: auto;
         }
-
-        .slot {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            margin: 15px 0;
-            transition: all 0.3s ease;
-            border: 1px solid var(--border-color);
-            position: relative;
+        .slots-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 36px;
+        }
+        .slot-card {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            padding: 0 0 24px 0;
             overflow: hidden;
-        }
-
-        .slot::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: var(--primary-color);
-            transform: scaleX(0);
-            transition: transform 0.3s ease;
-        }
-
-        .slot:hover {
-            transform: translateY(-8px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .slot:hover::before {
-            transform: scaleX(1);
-        }
-
-        .slot.available {
-            border-left: 4px solid var(--success-color);
-        }
-
-        .slot.sold {
-            border-left: 4px solid var(--danger-color);
-        }
-
-        .slot.pending {
-            border-left: 4px solid var(--warning-color);
-        }
-
-        .slot.reserved {
-            border-left: 4px solid var(--info-color);
-        }
-
-        .slot h4 {
-            color: var(--dark-bg);
-            font-weight: 600;
-            margin-bottom: 15px;
+            transition: box-shadow 0.2s, transform 0.2s;
+            position: relative;
             display: flex;
-            align-items: center;
-            gap: 10px;
+            flex-direction: column;
         }
-
-        .slot-icon {
-            font-size: 1.5rem;
-            color: var(--primary-color);
+        .slot-card:hover {
+            box-shadow: 0 8px 32px rgba(0,149,246,0.10);
+            transform: translateY(-4px) scale(1.01);
         }
-
-        .status-badge {
-            padding: 8px 16px;
-            border-radius: 25px;
-            font-weight: 600;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+        .slot-image {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            background: #e0e7ff;
         }
-
-        .buyer-info {
-            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 15px;
-            font-size: 0.9rem;
-            border-left: 3px solid var(--primary-color);
+        .slot-content {
+            padding: 20px 20px 0 20px;
+            flex: 1;
         }
-
-        .timestamp {
-            font-size: 0.8rem;
-            color: var(--secondary-color);
-            margin-top: 10px;
-            padding: 8px 12px;
-            background: rgba(100, 116, 139, 0.1);
-            border-radius: 8px;
+        .slot-title {
+            font-weight: 700;
+            color: #22223b;
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+        }
+        .slot-status {
             display: inline-block;
+            padding: 6px 18px;
+            border-radius: 20px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+        .slot-status.available { background: #059669; }
+        .slot-status.sold { background: #dc2626; }
+        .slot-status.pending { background: #d97706; }
+        .slot-status.reserved { background: #0891b2; }
+        .slot-description {
+            color: #64748b;
+            font-size: 1rem;
+            margin-bottom: 16px;
+        }
+        .slot-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: auto;
+        }
+        .slot-actions .btn {
+            border-radius: 24px;
+            font-weight: 600;
+            font-size: 1rem;
+            padding: 10px 22px;
+            transition: background 0.2s, transform 0.2s;
+        }
+        .slot-actions .btn-primary {
+            background: linear-gradient(90deg, #0095f6 0%, #005bea 100%);
+            color: #fff;
+            border: none;
+        }
+        .slot-actions .btn-primary:hover {
+            background: linear-gradient(90deg, #0080e0 0%, #005bea 100%);
+            transform: translateY(-2px) scale(1.03);
+        }
+        .slot-actions .btn-outline-secondary {
+            border: 2px solid #e2e8f0;
+            color: #64748b;
+            background: #fff;
+        }
+        .slot-actions .btn-outline-secondary:hover {
+            border-color: #0095f6;
+            color: #0095f6;
+        }
+
+        @media (max-width: 900px) {
+            .main-container {
+                margin: 16px;
+                padding: 0;
+            }
+            .hero-section {
+                padding: 48px 10px 32px 10px;
+            }
+            .stats-section, .slots-section {
+                padding: 24px 0 12px 0;
+            }
+        }
+        @media (max-width: 600px) {
+            .main-container {
+                margin: 0;
+                border-radius: 0;
+            }
+            .hero-section {
+                border-radius: 0;
+            }
+        }
+
+        .modal-content {
+            border-radius: 18px;
+            border: none;
+            box-shadow: 0 8px 32px rgba(0,149,246,0.10);
+            background: #fff;
+        }
+        .modal-header {
+            background: linear-gradient(90deg, #0095f6 0%, #005bea 100%);
+            color: #fff;
+            border-radius: 18px 18px 0 0;
+            border-bottom: none;
+            padding: 24px 24px 16px 24px;
+        }
+        .modal-title {
+            font-weight: 700;
+            font-size: 1.3rem;
+        }
+        .modal-body {
+            padding: 24px;
+        }
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid #e2e8f0;
+            background: #f8fafc;
+            border-radius: 0 0 18px 18px;
+        }
+        .form-label {
+            font-weight: 600;
+            color: #22223b;
+        }
+        .form-control, .form-select {
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-size: 1rem;
+            margin-bottom: 10px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #0095f6;
+            box-shadow: 0 0 0 2px rgba(0,149,246,0.10);
+        }
+        .alert {
+            border-radius: 12px;
+            border: none;
+            font-weight: 500;
+        }
+        .btn-custom {
+            border-radius: 12px;
+            padding: 12px 24px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: background 0.2s, box-shadow 0.2s;
+            border: none;
+        }
+        .btn-warning-custom {
+            background: linear-gradient(90deg, #fbbf24 0%, #f59e42 100%);
+            color: #fff;
+        }
+        .btn-warning-custom:hover {
+            background: linear-gradient(90deg, #f59e42 0%, #fbbf24 100%);
+        }
+        .btn-success-custom {
+            background: linear-gradient(90deg, #059669 0%, #10b981 100%);
+            color: #fff;
+        }
+        .btn-success-custom:hover {
+            background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+        }
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #22223b;
+        }
+        .btn-secondary:hover {
+            background: #cbd5e1;
+        }
+        .btn-close {
+            filter: invert(1);
+        }
+        .modal-backdrop.show {
+            opacity: 0.3 !important;
         }
 
         .search-container {
             background: white;
             border-radius: 15px;
-            padding: 25px;
-            box-shadow: var(--shadow);
-            margin-bottom: 30px;
+            padding: 32px 32px 24px 32px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            margin-bottom: 36px;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .search-container form.d-flex {
+            gap: 16px;
         }
 
         .search-input {
-            border: 2px solid var(--border-color);
-            border-radius: 10px;
-            padding: 12px 20px;
-            font-size: 1rem;
-            transition: all 0.3s ease;
+            flex: 1 1 auto;
+            font-size: 1.15rem;
+            padding: 16px 20px;
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
-
         .search-input:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            border-color: #0095f6;
+            box-shadow: 0 0 0 2px rgba(0,149,246,0.10);
         }
-
-        .btn-custom {
-            border-radius: 10px;
-            padding: 10px 20px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            transition: all 0.3s ease;
-            border: none;
-        }
-
-        .btn-custom:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow);
-        }
-
-        .btn-primary-custom {
-            background: linear-gradient(135deg, var(--primary-color), #1d4ed8);
-            color: white;
-        }
-
-        .btn-success-custom {
-            background: linear-gradient(135deg, var(--success-color), #047857);
-            color: white;
-        }
-
-        .btn-warning-custom {
-            background: linear-gradient(135deg, var(--warning-color), #b45309);
-            color: white;
-        }
-
-        .btn-danger-custom {
-            background: linear-gradient(135deg, var(--danger-color), #b91c1c);
-            color: white;
-        }
-
-        .btn-info-custom {
-            background: linear-gradient(135deg, var(--info-color), #0e7490);
-            color: white;
+        .search-container .btn {
+            font-size: 1.1rem;
+            padding: 14px 32px;
+            border-radius: 12px;
         }
 
         .filter-buttons {
             display: flex;
-            gap: 10px;
+            gap: 18px;
             flex-wrap: wrap;
             justify-content: center;
-            margin-bottom: 30px;
+            margin-bottom: 36px;
         }
-
         .filter-btn {
-            padding: 12px 24px;
-            border-radius: 25px;
-            font-weight: 600;
-            text-transform: uppercase;
+            padding: 14px 36px;
+            border-radius: 32px;
+            font-weight: 700;
+            font-size: 1.08rem;
             letter-spacing: 0.5px;
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
-            background: white;
-            color: var(--secondary-color);
+            border: 2px solid #e2e8f0;
+            background: #fff;
+            color: #64748b;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+            transition: background 0.2s, color 0.2s, border-color 0.2s, transform 0.2s;
         }
-
         .filter-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow);
+            background: #f3f4f6;
+            color: #0095f6;
+            border-color: #0095f6;
+            transform: translateY(-2px) scale(1.03);
         }
-
         .filter-btn.active {
-            background: var(--primary-color);
-            color: white;
-            border-color: var(--primary-color);
-        }
-
-        .map-preview {
-            border-radius: 15px;
-            box-shadow: var(--shadow);
-            transition: all 0.3s ease;
-        }
-
-        .map-preview:hover {
-            transform: scale(1.02);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .modal-content {
-            border-radius: 15px;
-            border: none;
-            box-shadow: var(--shadow-lg);
-        }
-
-        .modal-header {
-            background: linear-gradient(135deg, var(--primary-color), #1d4ed8);
-            color: white;
-            border-radius: 15px 15px 0 0;
-            border-bottom: none;
-        }
-
-        .modal-title {
-            font-weight: 600;
-        }
-
-        .form-control, .form-select {
-            border: 2px solid var(--border-color);
-            border-radius: 10px;
-            padding: 12px 16px;
-            transition: all 0.3s ease;
-        }
-
-        .form-control:focus, .form-select:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-        }
-
-        .alert {
-            border-radius: 10px;
-            border: none;
-            font-weight: 500;
-        }
-
-        /* Fix modal display issues */
-        .modal {
-            z-index: 9999 !important;
-        }
-
-        .modal-backdrop {
-            z-index: 9998 !important;
-        }
-
-        .modal-dialog {
-            z-index: 10000 !important;
-        }
-
-        .modal-content {
-            z-index: 10001 !important;
-            position: relative;
-        }
-
-        /* Additional modal fixes */
-        .modal.show {
-            display: block !important;
-        }
-
-        .modal-backdrop.show {
-            opacity: 0.5 !important;
-        }
-
-        .modal-dialog {
-            margin: 1.75rem auto;
-            max-width: 500px;
-        }
-
-        .modal-body {
-            padding: 1.5rem;
-        }
-
-        .modal-footer {
-            padding: 1rem 1.5rem;
-            border-top: 1px solid var(--border-color);
-        }
-
-        .loading-spinner {
-            display: none;
-            text-align: center;
-            padding: 20px;
-        }
-
-        .fade-in {
-            animation: fadeIn 0.5s ease-in;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .pulse {
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-
-        .floating-action {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            z-index: 1000;
-        }
-
-        .floating-btn {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary-color), #1d4ed8);
-            color: white;
-            border: none;
-            box-shadow: var(--shadow-lg);
-            font-size: 1.5rem;
-            transition: all 0.3s ease;
-        }
-
-        .floating-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 15px 30px rgba(37, 99, 235, 0.3);
-        }
-
-        @media (max-width: 768px) {
-            .hero-section h1 {
-                font-size: 2rem;
-            }
-            
-            .main-container {
-                margin: 10px;
-                padding: 20px;
-            }
-            
-            .filter-buttons {
-                flex-direction: column;
-                align-items: center;
-            }
+            background: linear-gradient(90deg, #0095f6 0%, #005bea 100%);
+            color: #fff;
+            border-color: #0095f6;
+            box-shadow: 0 4px 16px rgba(0,149,246,0.10);
         }
     </style>
 </head>
 <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm" style="box-shadow: 0 2px 8px rgba(0,0,0,0.03) !important;">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="#" style="font-weight: 700; font-size: 1.7rem; letter-spacing: 1px;">
+                <span style="font-family: 'Montserrat', sans-serif; letter-spacing: 2px;">LandSlot</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav align-items-center mb-2 mb-lg-0">
+                    <li class="nav-item me-3">
+                        <a href="/map" class="nav-link d-flex align-items-center" style="font-weight: 500; font-size: 1.05rem; color: #222; transition: color 0.2s;">
+                            <i class="fas fa-map me-1"></i>Map
+                        </a>
+                    </li>
+                    <li class="nav-item me-3">
+                        <a href="/profile" class="nav-link d-flex align-items-center" style="font-weight: 500; font-size: 1.05rem; color: #222; transition: color 0.2s;">
+                            <i class="fas fa-user-circle me-1"></i>Profile
+                        </a>
+                    </li>
+                    <li class="nav-item me-2">
+                        <a href="/login" class="nav-link" style="font-weight: 500; font-size: 1.05rem; color: #222; transition: color 0.2s;">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/login" class="btn btn-dark px-4 py-2" style="border-radius: 24px; font-weight: 600; font-size: 1.05rem; box-shadow: 0 1px 4px rgba(0,0,0,0.04); transition: background 0.2s;">Sign Up</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
     <div class="main-container">
         <!-- Hero Section -->
         <div class="hero-section">
             <h1><i class="fas fa-map-marked-alt me-3"></i>LandSlot</h1>
             <p>Premium Land Management & Real Estate Solutions</p>
+            <a href="/login" class="btn btn-primary-custom btn-custom">
+                <i class="fas fa-magic me-2"></i>Get Started
+            </a>
         </div>
 
         <!-- Flash Messages -->
@@ -562,25 +533,25 @@
                     <div class="row text-center">
                         <div class="col-md-3">
                             <div class="border-end">
-                                <div class="stats-number text-success">{{ land_slots|selectattr('status', 'equalto', 'available')|list|length }}</div>
+                                <div class="stats-number text-success">{{ total_count }}</div>
+                                <div class="stats-label">Total</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="border-end">
+                                <div class="stats-number text-success">{{ available_count }}</div>
                                 <div class="stats-label">Available</div>
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="border-end">
-                                <div class="stats-number text-warning">{{ land_slots|selectattr('status', 'equalto', 'pending')|list|length }}</div>
+                                <div class="stats-number text-warning">{{ pending_count }}</div>
                                 <div class="stats-label">Pending</div>
                             </div>
                         </div>
                         <div class="col-md-3">
-                            <div class="border-end">
-                                <div class="stats-number text-danger">{{ land_slots|selectattr('status', 'equalto', 'sold')|list|length }}</div>
-                                <div class="stats-label">Sold</div>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="stats-number text-primary">{{ land_slots|length }}</div>
-                            <div class="stats-label">Total</div>
+                            <div class="stats-number text-danger">{{ sold_count }}</div>
+                            <div class="stats-label">Sold</div>
                         </div>
                     </div>
                 </div>
@@ -620,174 +591,190 @@
         </div>
 
         <!-- Land Slots Grid -->
-        <div class="row">
-            {% for slot in land_slots %}
-            <div class="col-md-4 mb-4 fade-in">
-                <div class="slot {{ slot.status }}">
-                    <h4>
-                        <i class="fas fa-map-marker-alt slot-icon"></i>
-                        Plot {{ slot.x }},{{ slot.y }}
-                    </h4>
-                    <p>
-                        <strong>Status:</strong> 
-                        <span class="status-badge bg-{{ 'success' if slot.status == 'available' else 'warning' if slot.status == 'pending' else 'danger' if slot.status == 'sold' else 'info' }}">
-                            <i class="fas fa-{{ 'check-circle' if slot.status == 'available' else 'clock' if slot.status == 'pending' else 'sold-sign' if slot.status == 'sold' else 'info-circle' }} me-1"></i>
-                            {{ slot.status|upper }}
-                        </span>
-                    </p>
-                    <p><strong>Price:</strong> <span class="text-primary fw-bold">{{ slot.price }}</span></p>
-                    <p><strong>ID:</strong> <span class="text-muted">#{{ slot.id }}</span></p>
-                    
-                    {% if slot.buyer_info %}
-                    <div class="buyer-info">
-                        <strong><i class="fas fa-user me-1"></i>Buyer:</strong> {{ slot.buyer_info.name }}<br>
-                        <strong><i class="fas fa-envelope me-1"></i>Email:</strong> {{ slot.buyer_info.email }}<br>
-                        <strong><i class="fas fa-phone me-1"></i>Phone:</strong> {{ slot.buyer_info.phone }}
-                        {% if slot.buyer_info.payment_method %}
-                        <br><strong><i class="fas fa-credit-card me-1"></i>Payment:</strong> {{ slot.buyer_info.payment_method }} ({{ slot.buyer_info.payment_reference }})
-                        {% endif %}
+        <div class="slots-section">
+            <div class="slots-grid">
+                {% for slot in land_slots %}
+                <div class="slot-card fade-in">
+                    <div class="slot-image">
+                        <img src="{{ slot.image_url or url_for('static', filename='placeholder-property.jpg') }}" alt="Plot Image" style="width:100%;height:160px;object-fit:cover;border-radius:16px 16px 0 0;">
                     </div>
-                    {% endif %}
-                    
-                    {% if slot.reserved_at %}
-                    <div class="timestamp">
-                        <i class="fas fa-calendar-alt me-1"></i>
-                        <strong>Reserved:</strong> {{ slot.reserved_at }}
-                    </div>
-                    {% endif %}
-                    
-                    {% if slot.purchased_at %}
-                    <div class="timestamp">
-                        <i class="fas fa-shopping-cart me-1"></i>
-                        <strong>Purchased:</strong> {{ slot.purchased_at }}
-                    </div>
-                    {% endif %}
-                    
-                    <div class="mt-3">
-                        {% if slot.status == 'available' %}
-                            <button class="btn btn-warning-custom btn-custom btn-sm me-2" data-bs-toggle="modal" data-bs-target="#reserveModal{{ slot.id }}">
-                                <i class="fas fa-bookmark me-1"></i>Reserve
-                            </button>
-                        {% elif slot.status == 'pending' %}
-                            <button class="btn btn-success-custom btn-custom btn-sm me-2" data-bs-toggle="modal" data-bs-target="#purchaseModal{{ slot.id }}">
-                                <i class="fas fa-check me-1"></i>Confirm Purchase
-                            </button>
-                            <a href="/cancel_reservation/{{ slot.id }}" class="btn btn-outline-secondary btn-custom btn-sm me-2" 
-                               onclick="return confirm('Are you sure you want to cancel this reservation?')">
-                                <i class="fas fa-times me-1"></i>Cancel
-                            </a>
-                        {% endif %}
-                        <a href="/slot_details/{{ slot.id }}" class="btn btn-info-custom btn-custom btn-sm">
-                            <i class="fas fa-eye me-1"></i>View Details
-                        </a>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Reserve Modal for Available Slots -->
-            {% if slot.status == 'available' %}
-            <div class="modal fade" id="reserveModal{{ slot.id }}" tabindex="-1">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">
-                                <i class="fas fa-bookmark me-2"></i>Reserve Plot {{ slot.x }},{{ slot.y }}
-                            </h5>
-                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    <div class="slot-content">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <div class="slot-title">
+                                <i class="fas fa-map-marker-alt slot-icon me-2"></i>Plot {{ slot.x }},{{ slot.y }}
+                            </div>
+                            <span class="slot-status {{ slot.status }}">
+                                <i class="fas fa-{{ 'check-circle' if slot.status == 'available' else 'clock' if slot.status == 'pending' else 'sold-sign' if slot.status == 'sold' else 'info-circle' }} me-1"></i>
+                                {{ slot.status|upper }}
+                            </span>
                         </div>
-                        <form method="POST" action="/reserve/{{ slot.id }}">
-                            <div class="modal-body">
-                                <div class="alert alert-info">
-                                    <i class="fas fa-info-circle me-2"></i>
-                                    <strong>Price:</strong> {{ slot.price }}
-                                </div>
-                                <div class="mb-3">
-                                    <label for="buyer_name{{ slot.id }}" class="form-label">
-                                        <i class="fas fa-user me-1"></i>Buyer Name *
-                                    </label>
-                                    <input type="text" class="form-control" id="buyer_name{{ slot.id }}" name="buyer_name" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="buyer_email{{ slot.id }}" class="form-label">
-                                        <i class="fas fa-envelope me-1"></i>Email *
-                                    </label>
-                                    <input type="email" class="form-control" id="buyer_email{{ slot.id }}" name="buyer_email" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="buyer_phone{{ slot.id }}" class="form-label">
-                                        <i class="fas fa-phone me-1"></i>Phone *
-                                    </label>
-                                    <input type="tel" class="form-control" id="buyer_phone{{ slot.id }}" name="buyer_phone" required>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary btn-custom" data-bs-dismiss="modal">
-                                    <i class="fas fa-times me-1"></i>Cancel
-                                </button>
-                                <button type="submit" class="btn btn-warning-custom btn-custom">
-                                    <i class="fas fa-bookmark me-1"></i>Reserve Plot
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-            {% endif %}
-            
-            <!-- Purchase Confirmation Modal for Pending Slots -->
-            {% if slot.status == 'pending' %}
-            <div class="modal fade" id="purchaseModal{{ slot.id }}" tabindex="-1">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">
-                                <i class="fas fa-check-circle me-2"></i>Confirm Purchase - Plot {{ slot.x }},{{ slot.y }}
-                            </h5>
-                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        <div class="slot-description mb-2">
+                            <strong>Price:</strong> <span class="text-primary fw-bold">{{ slot.price }}</span><br>
+                            <strong>ID:</strong> <span class="text-muted">#{{ slot.id }}</span>
                         </div>
-                        <form method="POST" action="/confirm_purchase/{{ slot.id }}">
-                            <div class="modal-body">
-                                <div class="alert alert-info">
-                                    <i class="fas fa-info-circle me-2"></i>
-                                    <strong>Buyer:</strong> {{ slot.buyer_info.name }}<br>
-                                    <strong>Price:</strong> {{ slot.price }}<br>
-                                    <strong>Reserved:</strong> {{ slot.reserved_at }}
-                                </div>
-                                <div class="mb-3">
-                                    <label for="payment_method{{ slot.id }}" class="form-label">
-                                        <i class="fas fa-credit-card me-1"></i>Payment Method *
-                                    </label>
-                                    <select class="form-select" id="payment_method{{ slot.id }}" name="payment_method" required>
-                                        <option value="">Select payment method</option>
-                                        <option value="Bank Transfer">🏦 Bank Transfer</option>
-                                        <option value="Credit Card">💳 Credit Card</option>
-                                        <option value="Cash">💰 Cash</option>
-                                        <option value="Check">📄 Check</option>
-                                        <option value="Digital Wallet">📱 Digital Wallet</option>
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="payment_reference{{ slot.id }}" class="form-label">
-                                        <i class="fas fa-receipt me-1"></i>Payment Reference *
-                                    </label>
-                                    <input type="text" class="form-control" id="payment_reference{{ slot.id }}" name="payment_reference" placeholder="Transaction ID, check number, etc." required>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary btn-custom" data-bs-dismiss="modal">
-                                    <i class="fas fa-times me-1"></i>Cancel
+                        {% if slot.buyer_info %}
+                        <div class="buyer-info mb-2 p-2" style="background:#f3f4f6;border-radius:10px;">
+                            <strong><i class="fas fa-user me-1"></i>Buyer:</strong> {{ slot.buyer_info.name }}<br>
+                            <strong><i class="fas fa-envelope me-1"></i>Email:</strong> {{ slot.buyer_info.email }}<br>
+                            <strong><i class="fas fa-phone me-1"></i>Phone:</strong> {{ slot.buyer_info.phone }}
+                            {% if slot.buyer_info.payment_method %}
+                            <br><strong><i class="fas fa-credit-card me-1"></i>Payment:</strong> {{ slot.buyer_info.payment_method }} ({{ slot.buyer_info.payment_reference }})
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                        <div class="d-flex flex-wrap gap-2 align-items-center mb-2">
+                            {% if slot.reserved_at %}
+                            <span class="timestamp"><i class="fas fa-calendar-alt me-1"></i><strong>Reserved:</strong> {{ slot.reserved_at }}</span>
+                            {% endif %}
+                            {% if slot.purchased_at %}
+                            <span class="timestamp"><i class="fas fa-shopping-cart me-1"></i><strong>Purchased:</strong> {{ slot.purchased_at }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="slot-actions mt-2">
+                            {% if slot.status == 'available' %}
+                                <button class="btn btn-warning-custom btn-custom btn-sm me-2" data-bs-toggle="modal" data-bs-target="#reserveModal{{ slot.id }}">
+                                    <i class="fas fa-bookmark me-1"></i>Reserve
                                 </button>
-                                <button type="submit" class="btn btn-success-custom btn-custom">
+                            {% elif slot.status == 'pending' %}
+                                <button class="btn btn-success-custom btn-custom btn-sm me-2" data-bs-toggle="modal" data-bs-target="#purchaseModal{{ slot.id }}">
                                     <i class="fas fa-check me-1"></i>Confirm Purchase
                                 </button>
-                            </div>
-                        </form>
+                                <a href="/cancel_reservation/{{ slot.id }}" class="btn btn-outline-secondary btn-custom btn-sm me-2" 
+                                   onclick="return confirm('Are you sure you want to cancel this reservation?')">
+                                    <i class="fas fa-times me-1"></i>Cancel
+                                </a>
+                            {% endif %}
+                            <a href="/slot_details/{{ slot.id }}" class="btn btn-info-custom btn-custom btn-sm">
+                                <i class="fas fa-eye me-1"></i>View Details
+                            </a>
+                        </div>
                     </div>
                 </div>
+
+                {% if slot.status == 'available' %}
+                <!-- Reserve Modal for Available Slots -->
+                <div class="modal fade" id="reserveModal{{ slot.id }}" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">
+                                    <i class="fas fa-bookmark me-2"></i>Reserve Plot {{ slot.x }},{{ slot.y }}
+                                </h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                            </div>
+                            <form method="POST" action="/reserve/{{ slot.id }}">
+                                <div class="modal-body">
+                                    <div class="alert alert-info">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        <strong>Price:</strong> {{ slot.price }}
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="buyer_name{{ slot.id }}" class="form-label">
+                                            <i class="fas fa-user me-1"></i>Buyer Name *
+                                        </label>
+                                        <input type="text" class="form-control" id="buyer_name{{ slot.id }}" name="buyer_name" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="buyer_email{{ slot.id }}" class="form-label">
+                                            <i class="fas fa-envelope me-1"></i>Email *
+                                        </label>
+                                        <input type="email" class="form-control" id="buyer_email{{ slot.id }}" name="buyer_email" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="buyer_phone{{ slot.id }}" class="form-label">
+                                            <i class="fas fa-phone me-1"></i>Phone *
+                                        </label>
+                                        <input type="tel" class="form-control" id="buyer_phone{{ slot.id }}" name="buyer_phone" required>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary btn-custom" data-bs-dismiss="modal">
+                                        <i class="fas fa-times me-1"></i>Cancel
+                                    </button>
+                                    <button type="submit" class="btn btn-warning-custom btn-custom">
+                                        <i class="fas fa-bookmark me-1"></i>Reserve Plot
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if slot.status == 'pending' %}
+                <!-- Purchase Confirmation Modal for Pending Slots -->
+                <div class="modal fade" id="purchaseModal{{ slot.id }}" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">
+                                    <i class="fas fa-check-circle me-2"></i>Confirm Purchase - Plot {{ slot.x }},{{ slot.y }}
+                                </h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                            </div>
+                            <form method="POST" action="/confirm_purchase/{{ slot.id }}">
+                                <div class="modal-body">
+                                    <div class="alert alert-info">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        <strong>Buyer:</strong> {{ slot.buyer_info.name }}<br>
+                                        <strong>Price:</strong> {{ slot.price }}<br>
+                                        <strong>Reserved:</strong> {{ slot.reserved_at }}
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="payment_method{{ slot.id }}" class="form-label">
+                                            <i class="fas fa-credit-card me-1"></i>Payment Method *
+                                        </label>
+                                        <select class="form-select" id="payment_method{{ slot.id }}" name="payment_method" required>
+                                            <option value="">Select payment method</option>
+                                            <option value="Bank Transfer">🏦 Bank Transfer</option>
+                                            <option value="Credit Card">💳 Credit Card</option>
+                                            <option value="Cash">💰 Cash</option>
+                                            <option value="Check">📄 Check</option>
+                                            <option value="Digital Wallet">📱 Digital Wallet</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="payment_reference{{ slot.id }}" class="form-label">
+                                            <i class="fas fa-receipt me-1"></i>Payment Reference *
+                                        </label>
+                                        <input type="text" class="form-control" id="payment_reference{{ slot.id }}" name="payment_reference" placeholder="Transaction ID, check number, etc." required>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary btn-custom" data-bs-dismiss="modal">
+                                        <i class="fas fa-times me-1"></i>Cancel
+                                    </button>
+                                    <button type="submit" class="btn btn-success-custom btn-custom">
+                                        <i class="fas fa-check me-1"></i>Confirm Purchase
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% endfor %}
             </div>
-            {% endif %}
-            {% endfor %}
         </div>
+
+        <!-- Pagination Controls -->
+        {% if total_pages > 1 %}
+        <nav aria-label="Slot pagination" class="d-flex justify-content-center my-4">
+            <ul class="pagination pagination-lg" style="gap: 8px;">
+                <li class="page-item {% if page == 1 %}disabled{% endif %}">
+                    <a class="page-link rounded-pill" href="?status={{ current_status }}&search={{ search_query }}&page={{ page-1 }}" tabindex="-1">&laquo; Prev</a>
+                </li>
+                {% for p in range(1, total_pages+1) %}
+                <li class="page-item {% if p == page %}active{% endif %}">
+                    <a class="page-link rounded-pill" href="?status={{ current_status }}&search={{ search_query }}&page={{ p }}">{{ p }}</a>
+                </li>
+                {% endfor %}
+                <li class="page-item {% if page == total_pages %}disabled{% endif %}">
+                    <a class="page-link rounded-pill" href="?status={{ current_status }}&search={{ search_query }}&page={{ page+1 }}">Next &raquo;</a>
+                </li>
+            </ul>
+        </nav>
+        {% endif %}
 
         <!-- Loading Spinner -->
         <div class="loading-spinner" id="loadingSpinner">
@@ -824,20 +811,6 @@
             const slots = document.querySelectorAll('.slot');
             slots.forEach((slot, index) => {
                 slot.style.animationDelay = `${index * 0.1}s`;
-            });
-
-            // Ensure modals work properly
-            const modalTriggers = document.querySelectorAll('[data-bs-toggle="modal"]');
-            modalTriggers.forEach(trigger => {
-                trigger.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const targetModal = this.getAttribute('data-bs-target');
-                    const modal = document.querySelector(targetModal);
-                    if (modal) {
-                        const bsModal = new bootstrap.Modal(modal);
-                        bsModal.show();
-                    }
-                });
             });
         });
 
