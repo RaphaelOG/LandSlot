@@ -4,6 +4,22 @@ import io
 import os
 from werkzeug.utils import secure_filename
 from datetime import datetime
+from transformers import AutoTokenizer, AutoModelForCausalLM
+from transformers.pipelines import pipeline
+import torch
+
+# Load once at startup:
+tokenizer = AutoTokenizer.from_pretrained("ibm-granite/granite-3.3-8b-base")
+model = AutoModelForCausalLM.from_pretrained("ibm-granite/granite-3.3-8b-base")
+text_generator = pipeline(
+    "text-generation",
+    model=model,
+    tokenizer=tokenizer,
+    max_new_tokens=400,
+    temperature=0.7,
+    do_sample=False
+)
+
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
@@ -21,6 +37,37 @@ land_slots = [
 ]
 
 current_image_path = None
+
+def build_granite_prompt(budget, zone, size=None):
+    land_data = "\n".join([
+        f"ID {slot['id']}: {slot['price']}, zone: {slot.get('zone','N/A')}, size: {slot.get('size','N/A')}, status: {slot['status']}"
+        for slot in land_slots if slot['status']=='available'
+    ])
+    prompt = f"""
+You are an assistant helping users find suitable land plots.
+
+User preferences:
+- Budget: ${budget}
+- Zone: {zone}
+- Minimum size: {size or 'Any'}
+
+Here are available plots:
+{land_data}
+
+Based on this, recommend the best options and explain why.
+Only include plots within budget and correct zone.
+"""
+    return prompt.strip()
+
+def query_granite_model(prompt):
+    """
+    Calls the local Granite 3.3 8B instruct model via Hugging Face.
+    """
+    output = text_generator(prompt)
+    # `output` is a list of dicts, we just want the generated text:
+    return output[0]["generated_text"]
+
+
 
 def allowed_file(filename):
     return '.' in filename and \
