@@ -9,17 +9,12 @@ from transformers.pipelines import pipeline
 import torch
 
 # Load once at startup:
-tokenizer = AutoTokenizer.from_pretrained("ibm-granite/granite-3.3-8b-base")
-model = AutoModelForCausalLM.from_pretrained("ibm-granite/granite-3.3-8b-base")
-text_generator = pipeline(
-    "text-generation",
-    model=model,
-    tokenizer=tokenizer,
-    max_new_tokens=400,
-    temperature=0.7,
-    do_sample=False
-)
+device = "cpu"  # or "mps" for Apple Silicon, or "cuda" for NVIDIA GPU
 
+model_path = "ibm-granite/granite-3.3-2b-base"
+tokenizer = AutoTokenizer.from_pretrained(model_path)
+model = AutoModelForCausalLM.from_pretrained(model_path)
+pipe = pipeline("text-generation", model=model, tokenizer=tokenizer)
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
@@ -63,7 +58,7 @@ def query_granite_model(prompt):
     """
     Calls the local Granite 3.3 8B instruct model via Hugging Face.
     """
-    output = text_generator(prompt)
+    output = pipe(prompt)
     # `output` is a list of dicts, we just want the generated text:
     return output[0]["generated_text"]
 
@@ -148,6 +143,8 @@ def upload_file():
         return redirect(request.url)
     
     if file and allowed_file(file.filename):
+        if not file.filename:
+            return redirect(request.url)
         filename = secure_filename(file.filename)
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(filepath)
