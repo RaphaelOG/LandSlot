@@ -8,23 +8,23 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 from transformers.pipelines import pipeline
 import torch
 
-# Load once at startup:
-device = "cpu"  # or "mps" for Apple Silicon, or "cuda" for NVIDIA GPU
 
+device = "cpu"  # Force CPU usage, you can disable this if on windows, you'll probably need to get rid of .to(device) on model.
+
+# Loads the Granite Model
 model_path = "ibm-granite/granite-3.3-2b-base"
 tokenizer = AutoTokenizer.from_pretrained(model_path)
-model = AutoModelForCausalLM.from_pretrained(model_path)
-pipe = pipeline("text-generation", model=model, tokenizer=tokenizer)
+model = AutoModelForCausalLM.from_pretrained(model_path).to(device)
+pipe = pipeline("text-generation", model=model, tokenizer=tokenizer, device=-1)
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg', 'gif'}
-app.secret_key = 'your-secret-key-here'  # Needed for session management
+app.secret_key = 'your-secret-key-here'  
 
-# Ensure upload folder exists
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
-# Sample initial data with enhanced structure
+
 land_slots = [
     {"id": 1, "x": 0, "y": 0, "status": "available", "price": "$1000", "image": None, "reserved_at": None, "purchased_at": None, "buyer_info": None},
     {"id": 2, "x": 1, "y": 0, "status": "sold", "price": "$1500", "image": None, "reserved_at": "2024-01-15 10:30:00", "purchased_at": "2024-01-15 11:00:00", "buyer_info": {"name": "John Doe", "email": "john@example.com", "phone": "123-456-7890"}},
@@ -33,6 +33,7 @@ land_slots = [
 
 current_image_path = None
 
+# Creates the prompt with the necessary details for Granite
 def build_granite_prompt(budget, zone, size=None):
     land_data = "\n".join([
         f"ID {slot['id']}: {slot['price']}, zone: {slot.get('zone','N/A')}, size: {slot.get('size','N/A')}, status: {slot['status']}"
@@ -54,9 +55,10 @@ Only include plots within budget and correct zone.
 """
     return prompt.strip()
 
+# Sends prompt to granite and returns response.
 def query_granite_model(prompt):
     """
-    Calls the local Granite 3.3 8B instruct model via Hugging Face.
+    Calls the local Granite 3.3 bas instruct model via Hugging Face.
     """
     output = pipe(prompt)
     # `output` is a list of dicts, we just want the generated text:
@@ -308,6 +310,16 @@ def generate_image():
     
     except Exception as e:
         return f"Error generating image: {str(e)}", 500
+
+# Test case
+@app.route('/test_ai')
+def test_ai():
+    test_prompt = "Please sugest a land plot for a user with a $1200 budget in zone A."
+    try:
+        result = query_granite_model(test_prompt)
+        return f"<pre>{result}</pre>"
+    except Exception as e:
+        return f"Error: {e}", 500
 
 if __name__ == '__main__':
     app.run(debug=True)
