@@ -3,132 +3,580 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Slot Details - Plot {{ slot.x }},{{ slot.y }} | LandSlot</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>Plot {{ slot.x }},{{ slot.y }} Details | LandSlot</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand" href="/">
+                <div class="brand-logo">
+                    <i class="fas fa-layer-group"></i>
+                    <span>LandSlot</span>
+                </div>
+            </a>
+            
+            <div class="navbar-nav ms-auto">
+                <a href="/" class="btn btn-outline-light">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="container-fluid px-4">
+                <div class="row align-items-center">
+                    <div class="col-lg-8">
+                        <div class="hero-content">
+                            <div class="plot-badge mb-3">
+                                <span class="status-badge status-{{ slot.status }}">
+                                    <i class="fas fa-{{ 'check-circle' if slot.status == 'available' else 'clock' if slot.status == 'pending' else 'handshake' if slot.status == 'sold' else 'info-circle' }}"></i>
+                                    {{ slot.status|title }}
+                                </span>
+                            </div>
+                            <h1 class="hero-title">
+                                Plot {{ slot.x }}, {{ slot.y }}
+                                <span class="text-gradient">Details</span>
+                            </h1>
+                            <p class="hero-subtitle">
+                                Comprehensive information and transaction history for this premium land plot
+                            </p>
+                            <div class="plot-price">{{ slot.price }}</div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="plot-visual">
+                            <div class="plot-card">
+                                <div class="plot-icon">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </div>
+                                <div class="plot-info">
+                                    <h4>Plot #{{ slot.id }}</h4>
+                                    <p>Coordinates: {{ slot.x }}, {{ slot.y }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="container-fluid px-4 mt-4">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }} alert-dismissible fade show" role="alert">
+                            <i class="fas fa-{{ 'exclamation-triangle' if category == 'error' else 'check-circle' }} me-2"></i>
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <!-- Details Section -->
+        <section class="details-section">
+            <div class="container-fluid px-4">
+                <div class="row g-4">
+                    <!-- Basic Information -->
+                    <div class="col-lg-6">
+                        <div class="detail-card">
+                            <div class="card-header">
+                                <h3><i class="fas fa-info-circle me-2"></i>Basic Information</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="info-grid">
+                                    <div class="info-item">
+                                        <div class="info-label">
+                                            <i class="fas fa-hashtag"></i>
+                                            Plot ID
+                                        </div>
+                                        <div class="info-value">#{{ slot.id }}</div>
+                                    </div>
+                                    
+                                    <div class="info-item">
+                                        <div class="info-label">
+                                            <i class="fas fa-map-marker-alt"></i>
+                                            Coordinates
+                                        </div>
+                                        <div class="info-value">{{ slot.x }}, {{ slot.y }}</div>
+                                    </div>
+                                    
+                                    <div class="info-item">
+                                        <div class="info-label">
+                                            <i class="fas fa-tag"></i>
+                                            Status
+                                        </div>
+                                        <div class="info-value">
+                                            <span class="status-badge status-{{ slot.status }}">
+                                                <i class="fas fa-{{ 'check-circle' if slot.status == 'available' else 'clock' if slot.status == 'pending' else 'handshake' if slot.status == 'sold' else 'info-circle' }}"></i>
+                                                {{ slot.status|title }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="info-item">
+                                        <div class="info-label">
+                                            <i class="fas fa-dollar-sign"></i>
+                                            Price
+                                        </div>
+                                        <div class="info-value price">{{ slot.price }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Buyer Information -->
+                    <div class="col-lg-6">
+                        {% if slot.buyer_info %}
+                        <div class="detail-card">
+                            <div class="card-header">
+                                <h3><i class="fas fa-user me-2"></i>Buyer Information</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="buyer-profile">
+                                    <div class="buyer-avatar-large">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <div class="buyer-details-large">
+                                        <h4>{{ slot.buyer_info.name }}</h4>
+                                        <div class="contact-info">
+                                            <div class="contact-item">
+                                                <i class="fas fa-envelope"></i>
+                                                <span>{{ slot.buyer_info.email }}</span>
+                                            </div>
+                                            <div class="contact-item">
+                                                <i class="fas fa-phone"></i>
+                                                <span>{{ slot.buyer_info.phone }}</span>
+                                            </div>
+                                            {% if slot.buyer_info.payment_method %}
+                                            <div class="contact-item">
+                                                <i class="fas fa-credit-card"></i>
+                                                <span>{{ slot.buyer_info.payment_method }}</span>
+                                            </div>
+                                            <div class="contact-item">
+                                                <i class="fas fa-receipt"></i>
+                                                <span>{{ slot.buyer_info.payment_reference }}</span>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% else %}
+                        <div class="detail-card">
+                            <div class="card-header">
+                                <h3><i class="fas fa-user me-2"></i>Buyer Information</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="empty-state">
+                                    <i class="fas fa-user-plus"></i>
+                                    <h5>No Buyer Assigned</h5>
+                                    <p>This plot is available for reservation</p>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Timeline -->
+                    <div class="col-12">
+                        <div class="detail-card">
+                            <div class="card-header">
+                                <h3><i class="fas fa-history me-2"></i>Transaction Timeline</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="timeline">
+                                    <div class="timeline-item completed">
+                                        <div class="timeline-marker">
+                                            <i class="fas fa-plus-circle"></i>
+                                        </div>
+                                        <div class="timeline-content">
+                                            <h5>Plot Created</h5>
+                                            <p>Plot {{ slot.x }},{{ slot.y }} was added to the system</p>
+                                            <span class="timeline-date">System Generated</span>
+                                        </div>
+                                    </div>
+                                    
+                                    {% if slot.reserved_at %}
+                                    <div class="timeline-item completed">
+                                        <div class="timeline-marker warning">
+                                            <i class="fas fa-bookmark"></i>
+                                        </div>
+                                        <div class="timeline-content">
+                                            <h5>Plot Reserved</h5>
+                                            {% if slot.buyer_info %}
+                                            <p>Reserved by {{ slot.buyer_info.name }}</p>
+                                            {% endif %}
+                                            <span class="timeline-date">{{ slot.reserved_at }}</span>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    {% if slot.purchased_at %}
+                                    <div class="timeline-item completed">
+                                        <div class="timeline-marker success">
+                                            <i class="fas fa-check-circle"></i>
+                                        </div>
+                                        <div class="timeline-content">
+                                            <h5>Sale Completed</h5>
+                                            {% if slot.buyer_info %}
+                                            <p>Purchased by {{ slot.buyer_info.name }}</p>
+                                            {% if slot.buyer_info.payment_method %}
+                                            <p class="payment-info">
+                                                Payment: {{ slot.buyer_info.payment_method }} 
+                                                ({{ slot.buyer_info.payment_reference }})
+                                            </p>
+                                            {% endif %}
+                                            {% endif %}
+                                            <span class="timeline-date">{{ slot.purchased_at }}</span>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    {% if slot.status == 'available' %}
+                                    <div class="timeline-item pending">
+                                        <div class="timeline-marker">
+                                            <i class="fas fa-clock"></i>
+                                        </div>
+                                        <div class="timeline-content">
+                                            <h5>Awaiting Reservation</h5>
+                                            <p>This plot is available for reservation</p>
+                                        </div>
+                                    </div>
+                                    {% elif slot.status == 'pending' %}
+                                    <div class="timeline-item pending">
+                                        <div class="timeline-marker warning">
+                                            <i class="fas fa-clock"></i>
+                                        </div>
+                                        <div class="timeline-content">
+                                            <h5>Awaiting Payment</h5>
+                                            <p>Reservation confirmed, awaiting final payment</p>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="col-12">
+                        <div class="detail-card">
+                            <div class="card-header">
+                                <h3><i class="fas fa-cogs me-2"></i>Available Actions</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="action-grid">
+                                    {% if slot.status == 'available' %}
+                                        <button class="action-btn primary" data-bs-toggle="modal" data-bs-target="#reserveModal">
+                                            <div class="action-icon">
+                                                <i class="fas fa-bookmark"></i>
+                                            </div>
+                                            <div class="action-content">
+                                                <h5>Reserve Plot</h5>
+                                                <p>Reserve this plot for a potential buyer</p>
+                                            </div>
+                                        </button>
+                                    {% elif slot.status == 'pending' %}
+                                        <button class="action-btn success" data-bs-toggle="modal" data-bs-target="#purchaseModal">
+                                            <div class="action-icon">
+                                                <i class="fas fa-check"></i>
+                                            </div>
+                                            <div class="action-content">
+                                                <h5>Complete Sale</h5>
+                                                <p>Finalize the purchase transaction</p>
+                                            </div>
+                                        </button>
+                                        
+                                        <a href="/cancel_reservation/{{ slot.id }}" class="action-btn danger" 
+                                           onclick="return confirm('Are you sure you want to cancel this reservation?')">
+                                            <div class="action-icon">
+                                                <i class="fas fa-times"></i>
+                                            </div>
+                                            <div class="action-content">
+                                                <h5>Cancel Reservation</h5>
+                                                <p>Cancel the current reservation</p>
+                                            </div>
+                                        </a>
+                                    {% elif slot.status == 'sold' %}
+                                        <div class="completion-message">
+                                            <div class="completion-icon">
+                                                <i class="fas fa-check-circle"></i>
+                                            </div>
+                                            <div class="completion-content">
+                                                <h4>Sale Completed</h4>
+                                                <p>This plot has been successfully sold and the transaction is complete.</p>
+                                                <div class="completion-date">
+                                                    Completed on {{ slot.purchased_at }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                    
+                                    <a href="/generate_image" class="action-btn info" target="_blank">
+                                        <div class="action-icon">
+                                            <i class="fas fa-map"></i>
+                                        </div>
+                                        <div class="action-content">
+                                            <h5>View on Map</h5>
+                                            <p>See this plot's location on the full map</p>
+                                        </div>
+                                    </a>
+                                    
+                                    <button class="action-btn secondary" onclick="window.print()">
+                                        <div class="action-icon">
+                                            <i class="fas fa-print"></i>
+                                        </div>
+                                        <div class="action-content">
+                                            <h5>Print Details</h5>
+                                            <p>Generate a printable report</p>
+                                        </div>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modals -->
+    {% include 'modals.html' %}
+
+    <!-- Floating Action Button -->
+    <div class="floating-actions">
+        <div class="fab-container">
+            <button class="fab-main" data-bs-toggle="tooltip" title="Quick Actions">
+                <i class="fas fa-plus"></i>
+            </button>
+            <div class="fab-options">
+                <button class="fab-option" onclick="window.history.back()" title="Go Back">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <button class="fab-option" onclick="window.print()" title="Print Details">
+                    <i class="fas fa-print"></i>
+                </button>
+                <button class="fab-option" onclick="scrollToTop()" title="Scroll to Top">
+                    <i class="fas fa-arrow-up"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Initialize tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+
+        // Floating Action Button
+        document.querySelector('.fab-main').addEventListener('click', function() {
+            document.querySelector('.fab-container').classList.toggle('active');
+        });
+
+        // Smooth scrolling
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Auto-hide alerts
+        setTimeout(() => {
+            document.querySelectorAll('.alert').forEach(alert => {
+                const bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            });
+        }, 5000);
+    </script>
+
     <style>
-        :root {
-            --primary-color: #2563eb;
-            --secondary-color: #64748b;
-            --success-color: #059669;
-            --warning-color: #d97706;
-            --danger-color: #dc2626;
-            --info-color: #0891b2;
-            --light-bg: #f8fafc;
-            --dark-bg: #1e293b;
-            --border-color: #e2e8f0;
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        /* Additional styles specific to slot details page */
+        .plot-badge {
+            display: inline-block;
         }
 
-        * {
-            font-family: 'Inter', sans-serif;
+        .plot-price {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-top: var(--spacing-lg);
         }
 
-        body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
+        .plot-visual {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
         }
 
-        .main-container {
-            background: rgba(255, 255, 255, 0.95);
+        .plot-card {
+            background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
-            border-radius: 20px;
-            box-shadow: var(--shadow-lg);
-            margin: 20px;
-            padding: 30px;
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-2xl);
+            text-align: center;
+            color: var(--white);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .plot-icon {
+            font-size: 3rem;
+            margin-bottom: var(--spacing-lg);
+            color: var(--white);
+        }
+
+        .plot-info h4 {
+            color: var(--white);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .plot-info p {
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 0;
+        }
+
+        .details-section {
+            padding: var(--spacing-2xl) 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+            margin-top: var(--spacing-2xl);
         }
 
         .detail-card {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 25px;
-            box-shadow: var(--shadow);
-            transition: all 0.3s ease;
-            border: 1px solid var(--border-color);
-            position: relative;
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-md);
             overflow: hidden;
+            height: 100%;
         }
 
-        .detail-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: var(--primary-color);
-            transform: scaleX(0);
-            transition: transform 0.3s ease;
+        .detail-card .card-header {
+            background: var(--gray-50);
+            border-bottom: 1px solid var(--gray-200);
+            padding: var(--spacing-lg) var(--spacing-xl);
         }
 
-        .detail-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .detail-card:hover::before {
-            transform: scaleX(1);
-        }
-
-        .detail-card h3 {
-            color: var(--dark-bg);
+        .detail-card .card-header h3 {
+            margin-bottom: 0;
             font-weight: 600;
-            margin-bottom: 20px;
+            color: var(--gray-800);
             display: flex;
             align-items: center;
-            gap: 10px;
         }
 
-        .status-badge {
-            font-size: 1.2em;
-            padding: 12px 20px;
-            border-radius: 25px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+        .detail-card .card-body {
+            padding: var(--spacing-xl);
         }
 
-        .info-row {
+        .info-grid {
+            display: grid;
+            gap: var(--spacing-lg);
+        }
+
+        .info-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px 0;
-            border-bottom: 1px solid var(--border-color);
-            transition: all 0.3s ease;
+            padding: var(--spacing-md) 0;
+            border-bottom: 1px solid var(--gray-200);
         }
 
-        .info-row:hover {
-            background: rgba(37, 99, 235, 0.05);
-            border-radius: 8px;
-            padding-left: 10px;
-            padding-right: 10px;
-        }
-
-        .info-row:last-child {
+        .info-item:last-child {
             border-bottom: none;
         }
 
         .info-label {
-            font-weight: 600;
-            color: var(--secondary-color);
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: var(--spacing-sm);
+            font-weight: 500;
+            color: var(--gray-600);
         }
 
         .info-value {
-            color: var(--dark-bg);
-            font-weight: 500;
+            font-weight: 600;
+            color: var(--gray-800);
         }
 
-        .action-buttons {
-            margin-top: 20px;
+        .info-value.price {
+            font-size: 1.25rem;
+            color: var(--primary-color);
+        }
+
+        .buyer-profile {
             display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
+            gap: var(--spacing-lg);
+            align-items: flex-start;
+        }
+
+        .buyer-avatar-large {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 2rem;
+            flex-shrink: 0;
+        }
+
+        .buyer-details-large h4 {
+            color: var(--gray-800);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            font-size: 0.875rem;
+            color: var(--gray-600);
+        }
+
+        .contact-item i {
+            width: 16px;
+            text-align: center;
+            color: var(--primary-color);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: var(--spacing-2xl);
+            color: var(--gray-500);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .empty-state h5 {
+            color: var(--gray-700);
+            margin-bottom: var(--spacing-sm);
         }
 
         .timeline {
@@ -142,540 +590,243 @@
             left: 20px;
             top: 0;
             bottom: 0;
-            width: 3px;
-            background: linear-gradient(to bottom, var(--primary-color), var(--success-color));
-            border-radius: 2px;
+            width: 2px;
+            background: var(--gray-300);
         }
 
         .timeline-item {
             position: relative;
-            margin-bottom: 30px;
-            padding: 20px;
-            background: white;
-            border-radius: 12px;
-            box-shadow: var(--shadow);
-            transition: all 0.3s ease;
+            margin-bottom: var(--spacing-2xl);
+            display: flex;
+            align-items: flex-start;
+            gap: var(--spacing-lg);
         }
 
-        .timeline-item:hover {
-            transform: translateX(5px);
-            box-shadow: var(--shadow-lg);
+        .timeline-item:last-child {
+            margin-bottom: 0;
         }
 
-        .timeline-item::before {
-            content: '';
+        .timeline-marker {
             position: absolute;
             left: -30px;
-            top: 25px;
-            width: 15px;
-            height: 15px;
+            top: 5px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             background: var(--primary-color);
-            border: 3px solid white;
-            box-shadow: 0 0 0 3px var(--primary-color);
-        }
-
-        .timeline-item.completed::before {
-            background: var(--success-color);
-            box-shadow: 0 0 0 3px var(--success-color);
-        }
-
-        .timeline-item h5 {
-            color: var(--dark-bg);
-            font-weight: 600;
-            margin-bottom: 8px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            justify-content: center;
+            color: var(--white);
+            font-size: 1rem;
+            z-index: 1;
         }
 
-        .timeline-item p {
-            color: var(--secondary-color);
-            margin-bottom: 5px;
+        .timeline-marker.success {
+            background: var(--success-color);
         }
 
-        .btn-custom {
-            border-radius: 10px;
-            padding: 12px 24px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            transition: all 0.3s ease;
-            border: none;
-            display: inline-flex;
+        .timeline-marker.warning {
+            background: var(--warning-color);
+        }
+
+        .timeline-item.pending .timeline-marker {
+            background: var(--gray-400);
+        }
+
+        .timeline-content h5 {
+            color: var(--gray-800);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .timeline-content p {
+            color: var(--gray-600);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .timeline-date {
+            font-size: 0.875rem;
+            color: var(--gray-500);
+            font-weight: 500;
+        }
+
+        .payment-info {
+            font-size: 0.875rem;
+            color: var(--success-color);
+            font-weight: 500;
+        }
+
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--spacing-lg);
+        }
+
+        .action-btn {
+            display: flex;
             align-items: center;
-            gap: 8px;
+            gap: var(--spacing-lg);
+            padding: var(--spacing-lg);
+            border-radius: var(--radius-lg);
+            border: 2px solid var(--gray-200);
+            background: var(--white);
+            text-decoration: none;
+            color: var(--gray-700);
+            transition: var(--transition);
+            cursor: pointer;
         }
 
-        .btn-custom:hover {
+        .action-btn:hover {
             transform: translateY(-2px);
-            box-shadow: var(--shadow);
+            box-shadow: var(--shadow-md);
+            text-decoration: none;
+            color: var(--gray-700);
         }
 
-        .btn-primary-custom {
-            background: linear-gradient(135deg, var(--primary-color), #1d4ed8);
-            color: white;
-        }
-
-        .btn-success-custom {
-            background: linear-gradient(135deg, var(--success-color), #047857);
-            color: white;
-        }
-
-        .btn-warning-custom {
-            background: linear-gradient(135deg, var(--warning-color), #b45309);
-            color: white;
-        }
-
-        .btn-danger-custom {
-            background: linear-gradient(135deg, var(--danger-color), #b91c1c);
-            color: white;
-        }
-
-        .btn-info-custom {
-            background: linear-gradient(135deg, var(--info-color), #0e7490);
-            color: white;
-        }
-
-        .btn-outline-custom {
-            background: white;
-            color: var(--secondary-color);
-            border: 2px solid var(--border-color);
-        }
-
-        .btn-outline-custom:hover {
-            background: var(--light-bg);
+        .action-btn.primary {
             border-color: var(--primary-color);
             color: var(--primary-color);
         }
 
-        .modal-content {
-            border-radius: 15px;
-            border: none;
-            box-shadow: var(--shadow-lg);
+        .action-btn.primary:hover {
+            background: var(--primary-color);
+            color: var(--white);
         }
 
-        .modal-header {
-            background: linear-gradient(135deg, var(--primary-color), #1d4ed8);
-            color: white;
-            border-radius: 15px 15px 0 0;
-            border-bottom: none;
+        .action-btn.success {
+            border-color: var(--success-color);
+            color: var(--success-color);
         }
 
-        .modal-title {
+        .action-btn.success:hover {
+            background: var(--success-color);
+            color: var(--white);
+        }
+
+        .action-btn.danger {
+            border-color: var(--danger-color);
+            color: var(--danger-color);
+        }
+
+        .action-btn.danger:hover {
+            background: var(--danger-color);
+            color: var(--white);
+        }
+
+        .action-btn.info {
+            border-color: var(--info-color);
+            color: var(--info-color);
+        }
+
+        .action-btn.info:hover {
+            background: var(--info-color);
+            color: var(--white);
+        }
+
+        .action-btn.secondary {
+            border-color: var(--gray-400);
+            color: var(--gray-600);
+        }
+
+        .action-btn.secondary:hover {
+            background: var(--gray-600);
+            color: var(--white);
+        }
+
+        .action-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: var(--radius-lg);
+            background: var(--gray-100);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+            transition: var(--transition);
+        }
+
+        .action-btn:hover .action-icon {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .action-content h5 {
+            margin-bottom: var(--spacing-xs);
             font-weight: 600;
         }
 
-        .form-control, .form-select {
-            border: 2px solid var(--border-color);
-            border-radius: 10px;
-            padding: 12px 16px;
-            transition: all 0.3s ease;
+        .action-content p {
+            margin-bottom: 0;
+            font-size: 0.875rem;
+            opacity: 0.8;
         }
 
-        .form-control:focus, .form-select:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        .completion-message {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-lg);
+            padding: var(--spacing-2xl);
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: var(--radius-lg);
+            border: 2px solid var(--success-color);
+            grid-column: 1 / -1;
         }
 
-        .alert {
-            border-radius: 10px;
-            border: none;
-            font-weight: 500;
-        }
-
-        .page-header {
-            background: linear-gradient(135deg, var(--primary-color), #1d4ed8);
-            color: white;
-            border-radius: 15px;
-            padding: 30px;
-            margin-bottom: 30px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .page-header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.1"/><circle cx="10" cy="60" r="0.5" fill="white" opacity="0.1"/><circle cx="90" cy="40" r="0.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
-        }
-
-        .page-header h1 {
-            font-weight: 700;
-            margin-bottom: 10px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .page-header .btn {
-            position: relative;
-            z-index: 1;
-        }
-
-        .fade-in {
-            animation: fadeIn 0.5s ease-in;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .floating-action {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            z-index: 1000;
-        }
-
-        .floating-btn {
+        .completion-icon {
             width: 60px;
             height: 60px;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary-color), #1d4ed8);
-            color: white;
-            border: none;
-            box-shadow: var(--shadow-lg);
+            background: var(--success-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
             font-size: 1.5rem;
-            transition: all 0.3s ease;
+            flex-shrink: 0;
         }
 
-        .floating-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 15px 30px rgba(37, 99, 235, 0.3);
+        .completion-content h4 {
+            color: var(--success-color);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .completion-content p {
+            color: var(--gray-700);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .completion-date {
+            font-size: 0.875rem;
+            color: var(--gray-600);
+            font-weight: 500;
         }
 
         @media (max-width: 768px) {
-            .main-container {
-                margin: 10px;
-                padding: 20px;
-            }
-            
-            .info-row {
+            .buyer-profile {
                 flex-direction: column;
-                align-items: flex-start;
-                gap: 5px;
+                text-align: center;
             }
-            
-            .action-buttons {
-                flex-direction: column;
-            }
-            
+
             .timeline {
                 padding-left: 30px;
             }
-            
-            .timeline-item::before {
+
+            .timeline-marker {
                 left: -25px;
+                width: 35px;
+                height: 35px;
+                font-size: 0.875rem;
+            }
+
+            .action-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .completion-message {
+                flex-direction: column;
+                text-align: center;
             }
         }
     </style>
-</head>
-<body>
-    <div class="main-container">
-        <!-- Page Header -->
-        <div class="page-header">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h1><i class="fas fa-map-marker-alt me-3"></i>Plot {{ slot.x }},{{ slot.y }} Details</h1>
-                    <p class="mb-0 opacity-75">Comprehensive information and transaction history</p>
-                </div>
-                <a href="/" class="btn btn-outline-light">
-                    <i class="fas fa-arrow-left me-2"></i>Back to All Plots
-                </a>
-            </div>
-        </div>
-
-        <!-- Flash Messages -->
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }} alert-dismissible fade show fade-in" role="alert">
-                        <i class="fas fa-{{ 'exclamation-triangle' if category == 'error' else 'check-circle' }} me-2"></i>
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-
-        <div class="row">
-            <div class="col-lg-8 mx-auto">
-                <!-- Basic Information -->
-                <div class="detail-card fade-in">
-                    <h3><i class="fas fa-info-circle"></i>Basic Information</h3>
-                    <div class="info-row">
-                        <span class="info-label">
-                            <i class="fas fa-hashtag"></i>Plot ID
-                        </span>
-                        <span class="info-value">#{{ slot.id }}</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-label">
-                            <i class="fas fa-map-marker-alt"></i>Coordinates
-                        </span>
-                        <span class="info-value">{{ slot.x }}, {{ slot.y }}</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-label">
-                            <i class="fas fa-tag"></i>Status
-                        </span>
-                        <span class="info-value">
-                            <span class="status-badge bg-{{ 'success' if slot.status == 'available' else 'warning' if slot.status == 'pending' else 'danger' if slot.status == 'sold' else 'info' }}">
-                                <i class="fas fa-{{ 'check-circle' if slot.status == 'available' else 'clock' if slot.status == 'pending' else 'sold-sign' if slot.status == 'sold' else 'info-circle' }} me-1"></i>
-                                {{ slot.status|upper }}
-                            </span>
-                        </span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-label">
-                            <i class="fas fa-dollar-sign"></i>Price
-                        </span>
-                        <span class="info-value"><strong class="text-primary">{{ slot.price }}</strong></span>
-                    </div>
-                </div>
-
-                <!-- Buyer Information -->
-                {% if slot.buyer_info %}
-                <div class="detail-card fade-in">
-                    <h3><i class="fas fa-user"></i>Buyer Information</h3>
-                    <div class="info-row">
-                        <span class="info-label">
-                            <i class="fas fa-user"></i>Name
-                        </span>
-                        <span class="info-value">{{ slot.buyer_info.name }}</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-label">
-                            <i class="fas fa-envelope"></i>Email
-                        </span>
-                        <span class="info-value">{{ slot.buyer_info.email }}</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-label">
-                            <i class="fas fa-phone"></i>Phone
-                        </span>
-                        <span class="info-value">{{ slot.buyer_info.phone }}</span>
-                    </div>
-                    {% if slot.buyer_info.payment_method %}
-                    <div class="info-row">
-                        <span class="info-label">
-                            <i class="fas fa-credit-card"></i>Payment Method
-                        </span>
-                        <span class="info-value">{{ slot.buyer_info.payment_method }}</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-label">
-                            <i class="fas fa-receipt"></i>Payment Reference
-                        </span>
-                        <span class="info-value">{{ slot.buyer_info.payment_reference }}</span>
-                    </div>
-                    {% endif %}
-                </div>
-                {% endif %}
-
-                <!-- Timeline -->
-                <div class="detail-card fade-in">
-                    <h3><i class="fas fa-history"></i>Transaction Timeline</h3>
-                    <div class="timeline">
-                        <div class="timeline-item">
-                            <h5>
-                                <i class="fas fa-plus-circle text-primary"></i>
-                                Plot Created
-                            </h5>
-                            <p class="text-muted mb-0">Plot {{ slot.x }},{{ slot.y }} was added to the system</p>
-                        </div>
-                        
-                        {% if slot.reserved_at %}
-                        <div class="timeline-item completed">
-                            <h5>
-                                <i class="fas fa-bookmark text-warning"></i>
-                                Reserved
-                            </h5>
-                            <p class="text-muted mb-0">{{ slot.reserved_at }}</p>
-                            {% if slot.buyer_info %}
-                            <p class="mb-0"><strong>Reserved by:</strong> {{ slot.buyer_info.name }}</p>
-                            {% endif %}
-                        </div>
-                        {% endif %}
-                        
-                        {% if slot.purchased_at %}
-                        <div class="timeline-item completed">
-                            <h5>
-                                <i class="fas fa-check-circle text-success"></i>
-                                Purchased
-                            </h5>
-                            <p class="text-muted mb-0">{{ slot.purchased_at }}</p>
-                            {% if slot.buyer_info %}
-                            <p class="mb-0"><strong>Purchased by:</strong> {{ slot.buyer_info.name }}</p>
-                            {% endif %}
-                        </div>
-                        {% endif %}
-                    </div>
-                </div>
-
-                <!-- Action Buttons -->
-                <div class="detail-card fade-in">
-                    <h3><i class="fas fa-cogs"></i>Actions</h3>
-                    <div class="action-buttons">
-                        {% if slot.status == 'available' %}
-                            <button class="btn btn-warning-custom btn-custom" data-bs-toggle="modal" data-bs-target="#reserveModal">
-                                <i class="fas fa-bookmark"></i>Reserve This Plot
-                            </button>
-                        {% elif slot.status == 'pending' %}
-                            <button class="btn btn-success-custom btn-custom" data-bs-toggle="modal" data-bs-target="#purchaseModal">
-                                <i class="fas fa-check"></i>Confirm Purchase
-                            </button>
-                            <a href="/cancel_reservation/{{ slot.id }}" class="btn btn-outline-custom btn-custom" 
-                               onclick="return confirm('Are you sure you want to cancel this reservation?')">
-                                <i class="fas fa-times"></i>Cancel Reservation
-                            </a>
-                        {% elif slot.status == 'sold' %}
-                            <div class="alert alert-success w-100">
-                                <i class="fas fa-check-circle me-2"></i>
-                                <strong>This plot has been sold!</strong><br>
-                                Purchase completed on {{ slot.purchased_at }}
-                            </div>
-                        {% endif %}
-                        
-                        <a href="/generate_image" class="btn btn-info-custom btn-custom" target="_blank">
-                            <i class="fas fa-map"></i>View on Map
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Reserve Modal -->
-    {% if slot.status == 'available' %}
-    <div class="modal fade" id="reserveModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">
-                        <i class="fas fa-bookmark me-2"></i>Reserve Plot {{ slot.x }},{{ slot.y }}
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <form method="POST" action="/reserve/{{ slot.id }}">
-                    <div class="modal-body">
-                        <div class="alert alert-info">
-                            <i class="fas fa-info-circle me-2"></i>
-                            <strong>Price:</strong> {{ slot.price }}
-                        </div>
-                        <div class="mb-3">
-                            <label for="buyer_name" class="form-label">
-                                <i class="fas fa-user me-1"></i>Buyer Name *
-                            </label>
-                            <input type="text" class="form-control" id="buyer_name" name="buyer_name" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="buyer_email" class="form-label">
-                                <i class="fas fa-envelope me-1"></i>Email *
-                            </label>
-                            <input type="email" class="form-control" id="buyer_email" name="buyer_email" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="buyer_phone" class="form-label">
-                                <i class="fas fa-phone me-1"></i>Phone *
-                            </label>
-                            <input type="tel" class="form-control" id="buyer_phone" name="buyer_phone" required>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary btn-custom" data-bs-dismiss="modal">
-                            <i class="fas fa-times me-1"></i>Cancel
-                        </button>
-                        <button type="submit" class="btn btn-warning-custom btn-custom">
-                            <i class="fas fa-bookmark me-1"></i>Reserve Plot
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-    {% endif %}
-
-    <!-- Purchase Modal -->
-    {% if slot.status == 'pending' %}
-    <div class="modal fade" id="purchaseModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">
-                        <i class="fas fa-check-circle me-2"></i>Confirm Purchase - Plot {{ slot.x }},{{ slot.y }}
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <form method="POST" action="/confirm_purchase/{{ slot.id }}">
-                    <div class="modal-body">
-                        <div class="alert alert-info">
-                            <i class="fas fa-info-circle me-2"></i>
-                            <strong>Buyer:</strong> {{ slot.buyer_info.name }}<br>
-                            <strong>Price:</strong> {{ slot.price }}<br>
-                            <strong>Reserved:</strong> {{ slot.reserved_at }}
-                        </div>
-                        <div class="mb-3">
-                            <label for="payment_method" class="form-label">
-                                <i class="fas fa-credit-card me-1"></i>Payment Method *
-                            </label>
-                            <select class="form-select" id="payment_method" name="payment_method" required>
-                                <option value="">Select payment method</option>
-                                <option value="Bank Transfer">🏦 Bank Transfer</option>
-                                <option value="Credit Card">💳 Credit Card</option>
-                                <option value="Cash">💰 Cash</option>
-                                <option value="Check">📄 Check</option>
-                                <option value="Digital Wallet">📱 Digital Wallet</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="payment_reference" class="form-label">
-                                <i class="fas fa-receipt me-1"></i>Payment Reference *
-                            </label>
-                            <input type="text" class="form-control" id="payment_reference" name="payment_reference" placeholder="Transaction ID, check number, etc." required>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary btn-custom" data-bs-dismiss="modal">
-                            <i class="fas fa-times me-1"></i>Cancel
-                        </button>
-                        <button type="submit" class="btn btn-success-custom btn-custom">
-                            <i class="fas fa-check me-1"></i>Confirm Purchase
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-    {% endif %}
-
-    <!-- Floating Action Button -->
-    <div class="floating-action">
-        <button class="floating-btn" onclick="scrollToTop()" title="Scroll to top">
-            <i class="fas fa-arrow-up"></i>
-        </button>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Scroll to top function
-        function scrollToTop() {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        // Auto-hide alerts after 5 seconds
-        setTimeout(function() {
-            const alerts = document.querySelectorAll('.alert');
-            alerts.forEach(alert => {
-                const bsAlert = new bootstrap.Alert(alert);
-                bsAlert.close();
-            });
-        }, 5000);
-    </script>
 </body>
-</html> 
+</html>
