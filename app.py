@@ -5,7 +5,7 @@ import io
 import os
 from werkzeug.utils import secure_filename
 from datetime import datetime
-from transformers import AutoTokenizer, AutoModelForCausalLM
+from transformers import AutoTokenizer, AutoModelForCausalLM, AutoModelForDocumentQuestionAnswering
 from transformers.pipelines import pipeline
 import torch
 
