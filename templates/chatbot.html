@@ -1,0 +1,5 @@
+{% for msg in chat_history %}
+    <div class="chat-bubble {{ msg.role }}">
+        {{ msg.content|safe }}
+    </div>
+{% endfor %} 

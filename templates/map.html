@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Map - LandSlot</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: #f8fafc;
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+        }
+        .main-container {
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+            margin: 40px auto;
+            padding: 32px 24px;
+            max-width: 1100px;
+        }
+        .map-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #22223b;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+        .slot-map {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 18px;
+            justify-content: center;
+            margin: 0 auto 32px auto;
+            max-width: 900px;
+        }
+        .slot-cell {
+            background: #f3f4f6;
+            border-radius: 12px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+            height: 90px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: box-shadow 0.2s, background 0.2s, transform 0.2s;
+            border: 2px solid transparent;
+            position: relative;
+        }
+        .slot-cell.available { border-color: #059669; }
+        .slot-cell.sold { border-color: #dc2626; background: #ffeaea; }
+        .slot-cell.pending { border-color: #d97706; background: #fff7e6; }
+        .slot-cell.reserved { border-color: #0891b2; background: #e0f7fa; }
+        .slot-cell:hover {
+            box-shadow: 0 4px 16px rgba(0,149,246,0.10);
+            transform: translateY(-2px) scale(1.03);
+        }
+        .slot-label {
+            font-weight: 600;
+            color: #22223b;
+            font-size: 1.1rem;
+        }
+        .slot-status-badge {
+            font-size: 0.95rem;
+            font-weight: 600;
+            border-radius: 12px;
+            padding: 4px 14px;
+            margin-top: 6px;
+            color: #fff;
+        }
+        .slot-status-badge.available { background: #059669; }
+        .slot-status-badge.sold { background: #dc2626; }
+        .slot-status-badge.pending { background: #d97706; }
+        .slot-status-badge.reserved { background: #0891b2; }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="d-flex align-items-center mb-3">
+            <a href="/" class="btn btn-outline-primary me-3" style="border-radius: 24px; font-weight: 600;">
+                <i class="fas fa-arrow-left me-2"></i>Back to Home
+            </a>
+            <div class="flex-grow-1 text-center">
+                <div class="map-title mb-0">
+                    <i class="fas fa-map-marked-alt me-2"></i>LandSlot Map
+                </div>
+                <div class="text-muted" style="font-size: 1.1rem;">Select a slot on the map to view or reserve</div>
+            </div>
+        </div>
+        <div class="p-4" style="background: url('https://www.transparenttextures.com/patterns/graphy.png'), linear-gradient(120deg, #e0eafc 60%, #cfdef3 100%); border-radius: 18px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); border: 1.5px solid #e2e8f0; max-width: 950px; margin: 0 auto 32px auto;">
+            <div class="slot-map">
+                {% for slot in land_slots %}
+                <div class="slot-cell {{ slot.status }}" data-bs-toggle="modal" data-bs-target="#slotModal{{ slot.id }}">
+                    <div class="slot-label">Plot {{ slot.x }},{{ slot.y }}</div>
+                    <div class="slot-status-badge {{ slot.status }}">
+                        <i class="fas fa-{{ 'check-circle' if slot.status == 'available' else 'clock' if slot.status == 'pending' else 'sold-sign' if slot.status == 'sold' else 'info-circle' }} me-1"></i>
+                        {{ slot.status|capitalize }}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% for slot in land_slots %}
+        <!-- Slot Modal -->
+        <div class="modal fade" id="slotModal{{ slot.id }}" tabindex="-1" aria-labelledby="slotModalLabel{{ slot.id }}" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="slotModalLabel{{ slot.id }}">
+                            <i class="fas fa-map-marker-alt me-2"></i>Plot {{ slot.x }},{{ slot.y }}
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-2">
+                            <span class="fw-bold">Status:</span> <span class="slot-status-badge {{ slot.status }}">{{ slot.status|capitalize }}</span>
+                        </div>
+                        <div class="mb-2">
+                            <span class="fw-bold">Price:</span> <span class="text-primary fw-bold">{{ slot.price }}</span>
+                        </div>
+                        <div class="mb-2">
+                            <span class="fw-bold">ID:</span> <span class="text-muted">#{{ slot.id }}</span>
+                        </div>
+                        {% if slot.buyer_info %}
+                        <div class="mb-2">
+                            <span class="fw-bold">Buyer:</span> {{ slot.buyer_info.name }}<br>
+                            <span class="fw-bold">Email:</span> {{ slot.buyer_info.email }}<br>
+                            <span class="fw-bold">Phone:</span> {{ slot.buyer_info.phone }}
+                        </div>
+                        {% endif %}
+                        {% if slot.status == 'available' %}
+                        <form method="POST" action="/reserve/{{ slot.id }}">
+                            <div class="mb-3 mt-3">
+                                <label for="buyer_name{{ slot.id }}" class="form-label">Name</label>
+                                <input type="text" class="form-control" id="buyer_name{{ slot.id }}" name="buyer_name" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="buyer_email{{ slot.id }}" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="buyer_email{{ slot.id }}" name="buyer_email" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="buyer_phone{{ slot.id }}" class="form-label">Phone</label>
+                                <input type="tel" class="form-control" id="buyer_phone{{ slot.id }}" name="buyer_phone" required>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <button type="submit" class="btn btn-warning-custom">Reserve</button>
+                            </div>
+                        </form>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 

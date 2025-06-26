@@ -1,14 +1,25 @@
 from flask import Flask, jsonify, send_file, render_template, request, redirect, url_for, flash, session
+from markupsafe import Markup
 from PIL import Image, ImageDraw, ImageFont
 import io
 import os
 from werkzeug.utils import secure_filename
 from datetime import datetime
+from transformers import AutoTokenizer, AutoModelForCausalLM
+from transformers.pipelines import pipeline
+import torch
+
+# AI Model Configuration
+device = "cpu"  # Force CPU usage
+model_path = "ibm-granite/granite-3.3-2b-base"
+tokenizer = AutoTokenizer.from_pretrained(model_path)
+model = AutoModelForCausalLM.from_pretrained(model_path).to(device)
+pipe = pipeline("text-generation", model=model, tokenizer=tokenizer, device=-1)
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg', 'gif'}
-app.secret_key = 'your_secret_key_here'  # Needed for session
+app.secret_key = 'your-secret-key-here'
 
 # Ensure upload folder exists
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
@@ -21,6 +32,34 @@ land_slots = [
 ]
 
 current_image_path = None
+
+# AI Helper Functions
+def build_granite_prompt(budget, zone, size=None):
+    """Constructs a prompt for the AI model with available land data"""
+    land_data = "\n".join([
+        f"ID {slot['id']}: {slot['price']}, zone: {slot.get('zone','N/A')}, size: {slot.get('size','N/A')}, status: {slot['status']}"
+        for slot in land_slots if slot['status']=='available'
+    ])
+    prompt = f"""
+You are an assistant helping users find suitable land plots.
+
+User preferences:
+- Budget: ${budget}
+- Zone: {zone}
+- Minimum size: {size or 'Any'}
+
+Here are available plots:
+{land_data}
+
+Based on this, recommend the best options and explain why.
+Only include plots within budget and correct zone.
+"""
+    return prompt.strip()
+
+def query_granite_model(prompt):
+    """Queries the local Granite model for recommendations"""
+    output = pipe(prompt)
+    return output[0]["generated_text"]
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -93,7 +132,7 @@ def home():
     end = start + per_page
     paginated_slots = filtered_slots[start:end]
     
-    # Summary statistics for all slots (not just filtered)
+    # Summary statistics for all slots 
     all_slots = land_slots
     total_count = len(all_slots)
     available_count = sum(1 for slot in all_slots if slot['status'] == 'available')
@@ -277,7 +316,6 @@ def generate_image():
                 overlay
             )
             
-            # Save to bytes buffer in original format
             img_io = io.BytesIO()
             format = base_img.format if base_img.format else 'PNG'
             final_img.save(img_io, format)
@@ -287,6 +325,31 @@ def generate_image():
     
     except Exception as e:
         return f"Error generating image: {str(e)}", 500
+
+@app.route('/ai_recommend', methods=['GET', 'POST'])
+def ai_recommend():
+    if request.method == 'POST':
+        budget = request.form.get('budget')
+        zone = request.form.get('zone')
+        size = request.form.get('size')
+        
+        if not budget or not zone:
+            flash('Please provide at least budget and zone information.', 'error')
+            return redirect(url_for('ai_recommend'))
+        
+        try:
+            prompt = build_granite_prompt(budget, zone, size)
+            recommendation = query_granite_model(prompt)
+            return render_template('ai_recommendation.html', 
+                                recommendation=recommendation,
+                                budget=budget,
+                                zone=zone,
+                                size=size)
+        except Exception as e:
+            flash(f'Error generating recommendation: {str(e)}', 'error')
+            return redirect(url_for('ai_recommend'))
+    
+    return render_template('ai_recommendation.html')
 
 @app.route('/login')
 def login():
@@ -303,7 +366,6 @@ def profile():
         }
         return redirect(url_for('profile'))
 
-    # Example: Replace with real user data or session info in a real app
     user = session.get('user', {
         'avatar': '',
         'name': '',
@@ -320,10 +382,62 @@ def profile():
                 sold_count += 1
     user['reserved_count'] = reserved_count
     user['sold_count'] = sold_count
-    # Optionally, add owned_count and pending_count if you want
+    
     user['owned_count'] = reserved_count + sold_count
     user['pending_count'] = reserved_count
     return render_template('profile.html', user=user)
+
+@app.route('/map')
+def map_view():
+    return render_template('map.html', land_slots=land_slots)
+
+@app.route('/chatbot', methods=['GET', 'POST'])
+def chatbot():
+    if 'chat_history' not in session:
+        session['chat_history'] = []
+
+    if request.method == 'POST':
+        user_message = request.form.get('message', '').strip()
+        chat_history = session['chat_history']
+
+        if user_message:
+            # Add user message to history
+            chat_history.append({'role': 'user', 'content': user_message})
+
+            # Build prompt with land slot data and chat history
+            land_data = "\n".join([
+                f"ID {slot['id']}: {slot['price']}, zone: {slot.get('zone','N/A')}, size: {slot.get('size','N/A')}, status: {slot['status']}"
+                for slot in land_slots
+            ])
+            history_text = "\n".join(
+                [f"User: {msg['content']}" if msg['role'] == 'user' else f"Assistant: {msg['content']}" for msg in chat_history]
+            )
+            prompt = f"""
+You are a helpful real estate assistant. Here is the current land slot data:
+{land_data}
+
+Conversation so far:
+{history_text}
+
+Based on the above, answer the user's last question or provide recommendations if asked.
+""".strip()
+
+            # Query Granite model
+            try:
+                ai_response = query_granite_model(prompt)
+                # Only return the new response (strip prompt echo if any)
+                ai_response = ai_response[len(prompt):].strip() if ai_response.startswith(prompt) else ai_response
+            except Exception as e:
+                ai_response = f"Sorry, I couldn't process your request: {str(e)}"
+
+            # Add AI response to history
+            chat_history.append({'role': 'assistant', 'content': ai_response})
+            session['chat_history'] = chat_history
+
+        return render_template('chatbot.html', chat_history=chat_history)
+
+    # GET: show chat UI
+    return render_template('chatbot.html', chat_history=session.get('chat_history', []))
 
 if __name__ == '__main__':
     app.run(debug=True)

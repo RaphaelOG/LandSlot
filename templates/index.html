@@ -417,6 +417,48 @@
             border-color: #0095f6;
             box-shadow: 0 4px 16px rgba(0,149,246,0.10);
         }
+
+        #chatbotWidget .btn-primary-custom {
+            background: linear-gradient(90deg, #0095f6 0%, #005bea 100%);
+            color: #fff;
+            border: none;
+            transition: background 0.2s, transform 0.2s;
+        }
+        #chatbotWidget .btn-primary-custom:hover {
+            background: linear-gradient(90deg, #0080e0 0%, #005bea 100%);
+            transform: scale(1.08);
+        }
+        #chatbotWindow .card-header {
+            font-weight: 700;
+            font-size: 1.1rem;
+            padding: 18px 20px;
+        }
+        #chatbotMessages {
+            font-size: 1.05rem;
+        }
+        .chat-bubble {
+            max-width: 80%;
+            margin-bottom: 14px;
+            padding: 12px 16px;
+            border-radius: 16px;
+            font-size: 1.02rem;
+            line-height: 1.5;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            word-break: break-word;
+        }
+        .chat-bubble.user {
+            background: #0095f6;
+            color: #fff;
+            margin-left: auto;
+            border-bottom-right-radius: 4px;
+        }
+        .chat-bubble.assistant {
+            background: #fff;
+            color: #22223b;
+            margin-right: auto;
+            border-bottom-left-radius: 4px;
+            border: 1.5px solid #e0e7ff;
+        }
     </style>
 </head>
 <body>
@@ -791,6 +833,24 @@
         </button>
     </div>
 
+    <!-- Floating Chatbot Widget -->
+    <div id="chatbotWidget" style="position: fixed; bottom: 100px; right: 32px; z-index: 1050;">
+        <button id="openChatbotBtn" class="btn btn-primary-custom shadow-lg" style="border-radius: 50%; width: 64px; height: 64px; font-size: 2rem; display: flex; align-items: center; justify-content: center;">
+            <i class="fas fa-comments"></i>
+        </button>
+        <div id="chatbotWindow" class="card shadow-lg" style="width: 370px; max-width: 95vw; border-radius: 18px; display: none; flex-direction: column; overflow: hidden;">
+            <div class="card-header bg-primary text-white d-flex align-items-center justify-content-between" style="border-radius: 18px 18px 0 0; background: linear-gradient(90deg, #0095f6 0%, #005bea 100%);">
+                <span><i class="fas fa-robot me-2"></i>LandSlot AI</span>
+                <button id="closeChatbotBtn" class="btn btn-sm btn-light" style="border-radius: 50%;"><i class="fas fa-times"></i></button>
+            </div>
+            <div id="chatbotMessages" class="card-body" style="background: #f3f4f6; height: 340px; overflow-y: auto; padding: 18px 14px 12px 14px;"></div>
+            <form id="chatbotForm" class="d-flex align-items-center p-3 border-top bg-white" autocomplete="off" style="gap: 8px;">
+                <input type="text" id="chatbotInput" class="form-control" placeholder="Ask about land slots, recommendations, etc..." style="border-radius: 12px;" required>
+                <button type="submit" class="btn btn-primary-custom" style="border-radius: 12px; padding: 10px 18px;"><i class="fas fa-paper-plane"></i></button>
+            </form>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // Scroll to top function
@@ -823,7 +883,7 @@
             });
         }, 5000);
 
-        // Debug modal functionality
+        // modal functionality
         function debugModal(modalId) {
             console.log('Attempting to open modal:', modalId);
             const modal = document.getElementById(modalId);
@@ -835,6 +895,73 @@
                 console.log('Modal not found:', modalId);
             }
         }
+
+        // Floating Chatbot Widget Logic
+        const openBtn = document.getElementById('openChatbotBtn');
+        const closeBtn = document.getElementById('closeChatbotBtn');
+        const chatbotWindow = document.getElementById('chatbotWindow');
+        const chatbotForm = document.getElementById('chatbotForm');
+        const chatbotInput = document.getElementById('chatbotInput');
+        const chatbotMessages = document.getElementById('chatbotMessages');
+
+        // Open/close logic
+        openBtn.onclick = function() {
+            chatbotWindow.style.display = 'flex';
+            openBtn.style.display = 'none';
+            setTimeout(() => chatbotInput.focus(), 200);
+            loadChatHistory();
+        };
+        closeBtn.onclick = function() {
+            chatbotWindow.style.display = 'none';
+            openBtn.style.display = 'flex';
+        };
+
+        // Load chat history from server
+        function loadChatHistory() {
+            fetch('/chatbot')
+                .then(res => res.text())
+                .then(html => {
+                    // Parse chat_history from the returned HTML (rendered by Flask)
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const bubbles = doc.querySelectorAll('.chat-bubble');
+                    chatbotMessages.innerHTML = '';
+                    bubbles.forEach(bubble => chatbotMessages.appendChild(bubble.cloneNode(true)));
+                    chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+                });
+        }
+
+        // Submit chat message via AJAX
+        chatbotForm.onsubmit = function(e) {
+            e.preventDefault();
+            const msg = chatbotInput.value.trim();
+            if (!msg) return;
+            // Show user message instantly
+            const userBubble = document.createElement('div');
+            userBubble.className = 'chat-bubble user';
+            userBubble.textContent = msg;
+            chatbotMessages.appendChild(userBubble);
+            chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+            chatbotInput.value = '';
+            chatbotInput.disabled = true;
+            // Send to backend
+            fetch('/chatbot', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'message=' + encodeURIComponent(msg)
+            })
+            .then(res => res.text())
+            .then(html => {
+                // Parse assistant response
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const bubbles = doc.querySelectorAll('.chat-bubble');
+                chatbotMessages.innerHTML = '';
+                bubbles.forEach(bubble => chatbotMessages.appendChild(bubble.cloneNode(true)));
+                chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+            })
+            .finally(() => chatbotInput.disabled = false);
+        };
     </script>
 </body>
 </html>
