@@ -1,1 +1,400 @@
+/* Modern Navbar*/
+.navbar {
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    border-bottom: 1px solid #f1f3f4;
+}
 
+.navbar-brand {
+    font-weight: 600;
+    font-size: 1.5rem;
+    color: #000000;
+    text-decoration: none;
+}
+
+.navbar-brand:hover {
+    
+    text-decoration: none;
+}
+
+.navbar-nav .nav-link {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 500;
+    font-size: 1.3rem;
+    color: #000000;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+.navbar-nav .nav-link:hover {
+    background: #f8f9fa;
+    color: #000000;
+    text-decoration: none;
+}
+
+.navbar-nav .nav-link:focus {
+    background: #f8f9fa;
+    color: #518eff;
+    text-decoration: none;
+}
+
+.navbar-nav .btn {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 600;
+    font-size: 1.1rem;
+    background: transparent;
+    color: #518eff;
+    border: 2px solid #518eff;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    box-shadow: none;
+}
+
+.navbar-nav .btn:hover {
+    background: #518eff;
+    color: white;
+    text-decoration: none;
+    box-shadow: 0 2px 6px rgba(81, 142, 255, 0.16);
+}
+
+.navbar-nav .btn:focus {
+    background: #518eff;
+    color: white;
+    text-decoration: none;
+    box-shadow: 0 2px 6px rgba(81, 142, 255, 0.16);
+}
+
+.navbar-toggler {
+    border: none;
+    padding: 0.5rem;
+}
+
+.navbar-toggler:focus {
+    box-shadow: none;
+}
+
+/* Avatar styling */
+.avatar-placeholder {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #f8f9fa;
+    border: 1px solid #e8eaed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.avatar-placeholder i {
+    color: #000;
+    font-size: 0.9rem;
+}
+
+/* Modern Upload Area and Map Preview Styles */
+
+/* Upload Area Modern Design */
+.upload-area-modern {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border: 2px solid #e9ecef;
+    border-radius: 20px;
+    padding: 2.5rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.upload-area-modern::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #518eff, #7c3aed, #518eff);
+    background-size: 200% 100%;
+    animation: gradient-shift 3s ease infinite;
+}
+
+@keyframes gradient-shift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.upload-area-modern:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    border-color: #518eff;
+}
+
+.upload-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.upload-icon-modern {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #518eff 0%, #7c3aed 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    box-shadow: 0 8px 25px rgba(81, 142, 255, 0.3);
+}
+
+.upload-icon-modern i {
+    font-size: 2rem;
+    color: white;
+}
+
+.upload-title {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: #1a1a1a;
+    margin-bottom: 0.5rem;
+}
+
+.upload-description {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 1rem;
+    color: #6c757d;
+    margin-bottom: 0;
+}
+
+/* File Upload Styling */
+.file-upload-wrapper {
+    position: relative;
+    border: 2px dashed #dee2e6;
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    background: #f8f9fa;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.file-upload-wrapper:hover {
+    border-color: #518eff;
+    background: #f0f4ff;
+}
+
+.file-input-modern {
+    position: absolute;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.file-upload-overlay {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    pointer-events: none;
+}
+
+.file-upload-overlay i {
+    font-size: 2rem;
+    color: #518eff;
+}
+
+.file-upload-overlay span {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 500;
+    color: #6c757d;
+}
+
+/* Modern Buttons */
+.btn-primary-modern {
+    background: linear-gradient(135deg, #518eff 0%, #7c3aed 100%);
+    border: none;
+    border-radius: 12px;
+    padding: 1rem 2rem;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: white;
+    box-shadow: 0 4px 15px rgba(81, 142, 255, 0.3);
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.btn-primary-modern:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(81, 142, 255, 0.4);
+    color: white;
+}
+
+.btn-success-modern {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    border: none;
+    border-radius: 12px;
+    padding: 1rem 2rem;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: white;
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-success-modern:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+    color: white;
+    text-decoration: none;
+}
+
+/* Stats Card Modern */
+.stats-card-modern {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border: 2px solid #e9ecef;
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.stats-card-modern:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+}
+
+/* Download Section */
+.download-section {
+    margin-top: 1.5rem;
+}
+
+.info-badge {
+    display: inline-flex;
+    align-items: center;
+    background: #e3f2fd;
+    color: #1976d2;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* Preview Section */
+.preview-section {
+    display: flex;
+    flex-direction: column;
+}
+
+.preview-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.preview-title {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 700;
+    font-size: 1.3rem;
+    color: #1a1a1a;
+    margin: 0;
+}
+
+.preview-badge {
+    background: linear-gradient(135deg, #518eff 0%, #7c3aed 100%);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Map Preview Container */
+.map-preview-container {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.map-preview-container:hover {
+    transform: scale(1.02);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.map-preview-modern {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.preview-overlay {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: rgba(0,0,0,0.7);
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.map-preview-container:hover .preview-overlay {
+    opacity: 1;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 3rem 2rem;
+}
+
+.empty-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+}
+
+.empty-icon i {
+    font-size: 2rem;
+    color: #94a3b8;
+}
+
+.empty-title {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 600;
+    font-size: 1.2rem;
+    color: #475569;
+    margin-bottom: 0.5rem;
+}
+
+.empty-description {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 0.95rem;
+    color: #94a3b8;
+    margin: 0;
+}

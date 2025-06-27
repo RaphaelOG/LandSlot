@@ -37,7 +37,7 @@
             box-shadow: 0 4px 24px rgba(0,0,0,0.06);
             margin: 32px auto;
             padding: 0;
-            max-width: 1400px;
+            max-width: 1500px;
         }
 
         .hero-section {
@@ -157,7 +157,7 @@
         }
 
         .slots-section {
-            background: #f8fafc;
+            /*background: #f8fafc;*/
             padding: 32px 0 32px 0;
             max-width: 1300px;
             margin-left: auto;
@@ -462,32 +462,48 @@
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm" style="box-shadow: 0 2px 8px rgba(0,0,0,0.03) !important;">
+    <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm navbar-modern" style="backdrop-filter: blur(8px); box-shadow: 0 2px 16px rgba(0,0,0,0.06) !important; border-radius: 0 0 24px 24px; border-bottom: 1.5px solid #e5e7eb;">
         <div class="container">
-            <a class="navbar-brand d-flex align-items-center" href="#" style="font-weight: 700; font-size: 1.7rem; letter-spacing: 1px;">
-                <span style="font-family: 'Montserrat', sans-serif; letter-spacing: 2px;">LandSlot</span>
+            <a class="navbar-brand d-flex align-items-center gap-2" href="/" style="font-weight: 800; font-size: 1.8rem; letter-spacing: 1px;">
+                <svg width="42" height="42" viewBox="0 0 54 54" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-right: 8px;">
+                  <g>
+                    <circle cx="27" cy="27" r="24" fill="#0095f6"/>
+                    <path d="M27 14C21.477 14 17 18.477 17 24C17 32 27 40 27 40C27 40 37 32 37 24C37 18.477 32.523 14 27 14ZM27 28C24.791 28 23 26.209 23 24C23 21.791 24.791 20 27 20C29.209 20 31 21.791 31 24C31 26.209 29.209 28 27 28Z" fill="#fff"/>
+                  </g>
+                </svg>
+                <span style="font-family: 'Inter', 'SF Pro Display', 'Segoe UI', system-ui, -apple-system, sans-serif; letter-spacing: 1.5px; color: #1a1a1a; font-weight: 800; background: linear-gradient(135deg, #0095f6 0%, #415769 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">LandSlot</span>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-                <ul class="navbar-nav align-items-center mb-2 mb-lg-0">
-                    <li class="nav-item me-3">
-                        <a href="/map" class="nav-link d-flex align-items-center" style="font-weight: 500; font-size: 1.05rem; color: #222; transition: color 0.2s;">
+                <ul class="navbar-nav align-items-center mb-2 mb-lg-0 gap-1">
+                    <li class="nav-item me-2">
+                        <a href="/map" class="nav-link d-flex align-items-center nav-modern-link">
                             <i class="fas fa-map me-1"></i>Map
                         </a>
                     </li>
-                    <li class="nav-item me-3">
-                        <a href="/profile" class="nav-link d-flex align-items-center" style="font-weight: 500; font-size: 1.05rem; color: #222; transition: color 0.2s;">
+                    <!--<li class="nav-item me-2">
+                        <a href="/profile" class="nav-link d-flex align-items-center nav-modern-link">
                             <i class="fas fa-user-circle me-1"></i>Profile
                         </a>
                     </li>
+                    -->
                     <li class="nav-item me-2">
-                        <a href="/login" class="nav-link" style="font-weight: 500; font-size: 1.05rem; color: #222; transition: color 0.2s;">Login</a>
+                        <a href="/login" class="nav-link nav-modern-link">Login</a>
                     </li>
-                    <li class="nav-item">
-                        <a href="/login" class="btn btn-dark px-4 py-2" style="border-radius: 24px; font-weight: 600; font-size: 1.05rem; box-shadow: 0 1px 4px rgba(0,0,0,0.04); transition: background 0.2s;">Sign Up</a>
+                    <li class="nav-item me-2">
+                        <a href="/login" class="btn btn-dark px-4 py-2 nav-modern-btn">Sign Up</a>
                     </li>
+                    {% if session['user'] %}
+                    <li class="nav-item ms-3">
+                        <a href="/profile" class="d-flex align-items-center">
+                            <span class="avatar-placeholder" style="width:36px; height:36px; border-radius:50%; background:#f3f4f6; display:inline-block; border:2px solid #e5e7eb; box-shadow:0 1px 4px rgba(0,0,0,0.04);">
+                                <i class="fas fa-user" style="color:#3b3b3b; font-size:1.3rem; line-height:36px; text-align:center; width:100%; display:inline-block;"></i>
+                            </span>
+                        </a>
+                    </li>
+                    {% endif %}
                 </ul>
             </div>
         </div>
@@ -515,32 +531,45 @@
             {% endif %}
         {% endwith %}
         
-        <div class="row mb-4">
+        <div class="row mb-5">
             <div class="col-md-6">
-                <div class="upload-area">
-                    <div class="upload-icon">
-                        <i class="fas fa-cloud-upload-alt"></i>
+                <div class="upload-area" style="background: linear-gradient(145deg, #f8fafc, #e2e8f0); border: none; border-radius: 16px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); padding: 40px; position: relative; overflow: hidden; transition: all 0.4s ease;">
+                    <!-- Decorative elements -->
+                    <div style="position: absolute; top: -20px; right: -20px; width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(37, 99, 235, 0.05)); z-index: 0;"></div>
+                    <div style="position: absolute; bottom: -30px; left: -30px; width: 150px; height: 150px; border-radius: 50%; background: linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(37, 99, 235, 0.03)); z-index: 0;"></div>
+                    
+                    <div class="upload-icon" style="background: linear-gradient(135deg, #2563eb, #1d4ed8); width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 25px; box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);">
+                        <i class="fas fa-cloud-upload-alt" style="font-size: 2.5rem; color: white;"></i>
                     </div>
-                    <h4><i class="fas fa-map me-2"></i>Upload Map Image</h4>
-                    <p class="text-muted">Upload your blueprint or map to generate land slots</p>
-                    <form method="POST" action="/upload" enctype="multipart/form-data">
-                        <div class="mb-3">
-                            <input class="form-control" type="file" name="file" accept="image/*" required>
+                    
+                    <h4 style="font-weight: 700; font-size: 1.5rem; margin-bottom: 15px; text-align: center; position: relative; z-index: 1;">
+                        <i class="fas fa-map me-2" style="color: #2563eb;"></i>Upload Map Image
+                    </h4>
+                    
+                    <p class="text-muted" style="text-align: center; margin-bottom: 25px; font-size: 1.05rem; position: relative; z-index: 1;">
+                        Upload your blueprint or map to generate land slots
+                    </p>
+                    
+                    <form method="POST" action="/upload" enctype="multipart/form-data" style="position: relative; z-index: 1;">
+                        <div class="mb-4">
+                            <div class="custom-file-container" style="border: 2px dashed rgba(37, 99, 235, 0.3); border-radius: 12px; padding: 15px; background-color: rgba(255, 255, 255, 0.7); transition: all 0.3s ease;">
+                                <input class="form-control" type="file" name="file" accept="image/*" required style="border: none; background-color: transparent;">
+                            </div>
                         </div>
-                        <button type="submit" class="btn btn-primary-custom btn-custom">
+                        <button type="submit" class="btn btn-primary-custom btn-custom" style="background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; border: none; border-radius: 30px; padding: 12px 30px; width: 100%; font-weight: 600; font-size: 1.1rem; box-shadow: 0 8px 15px rgba(37, 99, 235, 0.2); transition: all 0.3s ease;">
                             <i class="fas fa-magic me-2"></i>Generate Land Slots
                         </button>
                     </form>
                 </div>
                 
                 {% if has_image %}
-                <div class="stats-card">
+                <div class="stats-card" style="margin-top: 20px; background: white; border-radius: 16px; padding: 25px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05); border: 1px solid rgba(226, 232, 240, 0.8); transition: all 0.3s ease;">
                     <div class="text-center">
-                        <a href="/generate_image" class="btn btn-success-custom btn-custom mb-2">
+                        <a href="/generate_image" class="btn btn-success-custom btn-custom mb-3" style="background: linear-gradient(135deg, #059669, #047857); color: white; border: none; border-radius: 30px; padding: 12px 30px; font-weight: 600; box-shadow: 0 8px 15px rgba(5, 150, 105, 0.2); transition: all 0.3s ease;">
                             <i class="fas fa-download me-2"></i>Download Current Map
                         </a>
-                        <p class="text-muted mb-0">
-                            <i class="fas fa-info-circle me-1"></i>
+                        <p class="text-muted mb-0" style="font-size: 0.95rem;">
+                            <i class="fas fa-info-circle me-1" style="color: #0891b2;"></i>
                             Map maintains original dimensions and format
                         </p>
                     </div>
@@ -549,18 +578,27 @@
             </div>
             
             <div class="col-md-6">
-                <div class="stats-card">
-                    <h5 class="card-title">
-                        <i class="fas fa-eye me-2"></i>Map Preview
+                <div class="stats-card" style="height: 100%; background: white; border-radius: 16px; padding: 30px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05); border: 1px solid rgba(226, 232, 240, 0.8); display: flex; flex-direction: column; transition: all 0.3s ease;">
+                    <h5 class="card-title" style="font-weight: 700; font-size: 1.3rem; margin-bottom: 20px; color: #1e293b; display: flex; align-items: center;">
+                        <span style="background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 12px;">
+                            <i class="fas fa-eye"></i>
+                        </span>
+                        Map Preview
                     </h5>
-                    {% if has_image %}
-                        <img src="/generate_image" class="map-preview img-fluid" alt="Current Map">
-                    {% else %}
-                        <div class="text-center text-muted py-5">
-                            <i class="fas fa-map fa-3x mb-3"></i>
-                            <p>No map uploaded yet</p>
-                        </div>
-                    {% endif %}
+                    
+                    <div style="flex-grow: 1; display: flex; align-items: center; justify-content: center; background: linear-gradient(145deg, #f8fafc, #e2e8f0); border-radius: 12px; padding: 20px; position: relative; overflow: hidden;">
+                        {% if has_image %}
+                            <img src="/generate_image" class="map-preview img-fluid" alt="Current Map" style="max-height: 100%; border-radius: 8px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);">
+                        {% else %}
+                            <div class="text-center text-muted py-5" style="width: 100%;">
+                                <div style="background: rgba(226, 232, 240, 0.5); width: 100px; height: 100px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+                                    <i class="fas fa-map fa-3x" style="color: #64748b;"></i>
+                                </div>
+                                <p style="font-size: 1.1rem; font-weight: 500; color: #64748b;">No map uploaded yet</p>
+                                <p style="font-size: 0.9rem; max-width: 80%; margin: 0 auto;">Upload a blueprint or map image to see the preview here</p>
+                            </div>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>
