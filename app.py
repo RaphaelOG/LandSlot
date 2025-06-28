@@ -4,10 +4,16 @@ from PIL import Image, ImageDraw, ImageFont
 import io
 import os
 from werkzeug.utils import secure_filename
-from datetime import datetime
-from transformers import AutoTokenizer, AutoModelForCausalLM, AutoModelForDocumentQuestionAnswering
+from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime, timedelta
+from transformers import AutoTokenizer, AutoModelForCausalLM
 from transformers.pipelines import pipeline
 import torch
+from flask_sqlalchemy import SQLAlchemy
+from flask_jwt_extended import JWTManager, jwt_required, create_access_token
+from sqlalchemy import Column, String, JSON, Integer, Boolean, DateTime, Float, ForeignKey
+from dotenv import load_dotenv
+import boto3
 
 # AI Model Configuration
 device = "cpu"  # Force CPU usage
@@ -19,7 +25,72 @@ pipe = pipeline("text-generation", model=model, tokenizer=tokenizer, device=-1)
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg', 'gif'}
+load_dotenv()
 app.secret_key = 'your-secret-key-here'
+
+#Configure aws rds postgres database
+db_username = os.environ['db_username']
+db_password = os.environ['db_password']
+db_endpoint = os.environ['db_endpoint']
+db_name = os.environ['db_name']
+db_port = os.environ['db_port']
+app.config['SQLALCHEMY_DATABASE_URI'] = f"postgresql+psycopg2://{db_username}:{db_password}@{db_endpoint}:{db_port}"
+db = SQLAlchemy()
+db.init_app(app)
+
+#Protect with jwt
+jwt = JWTManager()
+jwt.init_app(app)
+
+
+#Configure credentials for aws s3 buckets
+AWS_SECRET_KEY = os.environ['AWS_SECRET_KEY']
+AWS_ACCESS_KEY = os.environ['AWS_ACCESS_KEY']
+s3 = boto3.client(
+    's3',
+    aws_access_key_id=AWS_ACCESS_KEY,
+    aws_secret_access_key=AWS_SECRET_KEY,
+    region_name='us-east-1'  
+)
+USERBUCKET = os.environ['s3_bucket_name_profile_picture']
+LANDSLOTBUCKET = os.environ['s3_bucket_name_land_slot_picture']
+
+
+
+#Configure schema for users table on database
+class UserModel(db.Model):
+    __tablename__ = 'users'
+    id = Column(Integer, autoincrement=True, nullable=False, primary_key=True)
+    username = Column(String(25), unique=True, nullable= False, index=True)
+    email = Column(String(50), unique=True, nullable=False, index=True)
+    full_name = Column(String(100), nullable=False)
+    password = Column(String(200), nullable=False, index=True)
+    phone_number = Column(String(15), unique=True ,nullable=False)
+    created_at = Column(DateTime, nullable=False)
+    address = Column(String(75), nullable=False)
+    land_slots = db.relationship('LandSlotModel', backref = 'user', lazy = True)
+    
+
+    def __repr__(self):
+        return f"User(id = {self.id}, username = {self.username}, full_name = {self.full_name}, password = {self.password}, email = {self.email}, created_at = {self.created_at}, phone_number = {self.phone_number}, land_plots = {self.land_plots})"
+
+#Configure schema for land_slots table on database
+class LandSlotModel(db.Model):
+    __tablename__ = 'land_slots'
+    id = Column(Integer, autoincrement=True, nullable=False, primary_key=True)
+    is_avaliable = Column(Boolean, default=True )
+    is_reserved = Column(Boolean, default = False)
+    currency = Column(String(4), default="USD", nullable=False)
+    size = Column(Float, nullable=False)
+    price = Column(Float, nullable=False)
+    description = Column(String(800), nullable=True)
+    features = Column(JSON, default={"water" : "", "electricity" : ""})
+    created_at = Column(DateTime, nullable=False)
+    last_updated = Column(DateTime, nullable=False)
+    
+    owner = Column(String(25), ForeignKey('users.username'), nullable=True)
+    def __repr__(self):
+        return f"Land_Slot(avalibility = {self.is_avaliable}, currency = {self.currency}, size = {self.size}, price = {self.price}, features = {self.features}, created_at = {self.created_at}, last_updated = {self.last_updated}, owner = {self.owner})"
 
 # Ensure upload folder exists
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
@@ -105,12 +176,90 @@ def create_land_slots_from_image(image_path):
         print(f"Error processing image: {e}")
         return None
 
+
+
+def upload_to_profile_picture_bucket(file, username):
+    """
+    Uploads file from request.files.get() and username to profile picture bucket
+    """
+    try:
+        if file:
+            s3.put_object(
+                Bucket=USERBUCKET,
+                Key=f'{username}-profile-picture',
+                Body= file.stream,  
+                ContentType=file.content_type  
+        )
+
+    except Exception as e:
+        print(str(e))
+
+def upload_to_land_slots_picture_bucket(file, id):
+    """
+    Uploads file from request.files.get() and id to land slot picture bucket
+    """
+    try:
+        if file:
+            s3.put_object(
+                Bucket=LANDSLOTBUCKET,
+                Key=f'{id}-profile-picture',
+                Body= file.stream,  
+                ContentType=file.content_type  
+        )
+    except Exception as e:
+        print(str(e))
+
+def generate_signed_url_from_profile_picture_bucket(username):
+    """
+    Generates a url for an img tag from profile picture bucket, requires username be in bucket
+    """
+    try:
+        url = s3.generate_presigned_url(
+                ClientMethod='get_object',
+                Params={
+                    'Bucket': USERBUCKET,
+                    'Key': f'{username}-profile-picture'
+                },
+                ExpiresIn=3600
+            )
+        return url
+
+    except Exception as e:
+        print(str(e))   
+
+def generate_signed_url_from_land_slots_bucket(id):
+    """
+    Generates a url for an img tag from land_slots pictures bucket, requires id
+    """
+    try:
+        url = s3.generate_presigned_url(
+                ClientMethod='get_object',
+                Params={
+                    'Bucket': LANDSLOTBUCKET,
+                    'Key': f'{id}-picture.jpg'
+                },
+                ExpiresIn=3600
+            )
+        return url
+
+    except Exception as e:
+        print(str(e))   
+
+
+
+
+
+
+
+
 @app.route('/')
 def home():
+    print(session.get('username'))
     status_filter = request.args.get('status', 'all')
     search_query = request.args.get('search', '').strip()
     page = int(request.args.get('page', 1))
     per_page = 9
+    
     
     # Filter by status
     if status_filter == 'all':
@@ -177,7 +326,66 @@ def upload_file():
     
     return redirect(request.url)
 
+
+
+@app.route('/signup', methods = ['POST'])
+def signup():
+    try:
+
+        #Currently has dummy data
+        #Receives fields from fronted and checks if username is in use
+        username = "test" #request.form.get('username')
+        email = "test@gmail.com"#request.form.get('email')
+        password = request.form.get('password')
+        full_name = request.form.get('full_name')
+        print(password, full_name, "password")
+        address = "address"#request.form.get('address')
+        phone_number = "phone"#request.form.get('phone_number')
+        # profile_picture = request.files.get('profile_picture')
+        checkUsername = UserModel.query.filter_by(username=username).first()
+        
+        if checkUsername:
+            return render_template('login.html')
+        
+        created_at = datetime.now()
+
+        #Creates user and sets session variables
+        user = UserModel(username = username, email = email, password = generate_password_hash(password), created_at = created_at, phone_number = phone_number, address = address, full_name = full_name)
+        session['username'] = user.username
+        session['access_token'] = create_access_token(identity=user.username, expires_delta= timedelta(seconds=1000000))
+        # try:
+        #     if profile_picture:
+        #         s3.Bucket(USERBUCKET).upload_fileobj(profile_picture, f'{user.username}-profile-picture')
+            
+        # except:
+        #     print('Could not upload profile picture')
+
+        db.session.add(user)
+        db.session.commit()
+        #Redirects back to home
+        return render_template("index.html")
+    except Exception as e:
+        print(str(e))
+        return jsonify({'success' : False, "error" : str(e)})
+
+
+@app.route('/setlandslot/<int:slot_id>', methods=['POST'])
+@jwt_required()
+def set_land_slot(slot_id):
+    land_slot_picture = request.files.get('land_slot_picture')
+    land_slot = LandSlotModel.query.filter_by(id = slot_id).first()
+    try:
+        s3.upload_file(profile, LANDSLOTBUCKET, '{land_slot.id}-profile-picture')
+        s3.Bucket(LANDSLOTBUCKET).upload_fileobj(land_slot_picture, f'{land_slot.id}-profile-picture')
+
+    except Exception as e:
+        return jsonify({'success' : False, 'error' : str(e)})
+
+
+    
+
 @app.route('/reserve/<int:slot_id>', methods=['GET', 'POST'])
+@jwt_required()
 def reserve_slot(slot_id):
     global land_slots
     
@@ -209,6 +417,7 @@ def reserve_slot(slot_id):
     return redirect(url_for('home'))
 
 @app.route('/confirm_purchase/<int:slot_id>', methods=['POST'])
+@jwt_required()
 def confirm_purchase(slot_id):
     global land_slots
     
@@ -239,6 +448,7 @@ def confirm_purchase(slot_id):
     return redirect(url_for('home'))
 
 @app.route('/cancel_reservation/<int:slot_id>')
+@jwt_required()
 def cancel_reservation(slot_id):
     global land_slots
     
@@ -351,9 +561,48 @@ def ai_recommend():
     
     return render_template('ai_recommendation.html')
 
-@app.route('/login')
+@app.route('/login', methods =['GET', 'POST'])
 def login():
-    return render_template('login.html')
+    if request.method == 'GET':
+        return render_template('login.html')
+
+    if request.method == 'POST':
+       
+        #Receives fields from frontend 
+        username = request.form.get('username')
+        email = request.form.get('email')
+        password = request.form.get('password')
+        profile_picture = request.files.get('profile_picture')
+        print(generate_signed_url_from_profile_picture_bucket(None))
+        try:
+            if profile_picture:
+                s3.put_object(
+            Bucket=USERBUCKET,
+            Key=f'{username}-profile-picture',
+            Body= profile_picture.stream,  # This is the file data
+            ContentType=profile_picture.content_type  # Preserve original content type
+        )
+                # s3.upload_file(profile_picture, USERBUCKET, f'{username}-profile-picture')
+                # s3.Bucket(USERBUCKET).upload_fileobj(profile_picture, f'{user.username}-profile-picture.png')
+
+        except Exception as e:
+            print(str(e))
+
+        
+        user = UserModel.query.filter_by(email = email).first()
+        print("password:", password)
+        if not user:
+            return render_template('login.html')
+        
+        #Checks if password is correct
+        if check_password_hash(user.password, password):
+
+            #Sets session variables
+            session['username'] = user.username
+            session['access_token'] = create_access_token(identity=user.username, expires_delta= timedelta(seconds=1000000))
+            return render_template('map.html')
+        else:
+            return render_template('login.html')
 
 @app.route('/profile', methods=['GET', 'POST'])
 def profile():
@@ -413,14 +662,14 @@ def chatbot():
                 [f"User: {msg['content']}" if msg['role'] == 'user' else f"Assistant: {msg['content']}" for msg in chat_history]
             )
             prompt = f"""
-You are a helpful real estate assistant. Here is the current land slot data:
-{land_data}
+# You are a helpful real estate assistant. Here is the current land slot data:
+# {land_data}
 
-Conversation so far:
-{history_text}
+# Conversation so far:
+# {history_text}
 
-Based on the above, answer the user's last question or provide recommendations if asked.
-""".strip()
+# Based on the above, answer the user's last question or provide recommendations if asked.
+# """.strip()
 
             # Query Granite model
             try:
@@ -439,5 +688,9 @@ Based on the above, answer the user's last question or provide recommendations i
     # GET: show chat UI
     return render_template('chatbot.html', chat_history=session.get('chat_history', []))
 
+
+
 if __name__ == '__main__':
+    with app.app_context():
+        db.create_all()
     app.run(debug=True)

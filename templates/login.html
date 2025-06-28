@@ -1,293 +1,427 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login - LandSlot</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
     <style>
-        body {
-            background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      body {
+        background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        font-family: "Montserrat", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, Helvetica, Arial, sans-serif;
+      }
+      .auth-container {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 18px;
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18);
+        max-width: 950px;
+        width: 100%;
+        margin: 0 auto;
+        overflow: hidden;
+        border: 1px solid #e6e6e6;
+      }
+      .blueprint-container {
+        background: url("https://images.unsplash.com/photo-1581093450021-4a7360e9a6a3?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80");
+        background-size: cover;
+        background-position: center;
+        min-height: 600px;
+        position: relative;
+      }
+      .blueprint-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 82, 212, 0.32);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .blueprint-overlay h1 {
+        color: white;
+        font-size: 3.2rem;
+        font-weight: 700;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+        letter-spacing: 2px;
+      }
+      .form-container {
+        padding: 48px 40px 36px 40px;
+        text-align: center;
+      }
+      .logo {
+        font-family: "Billabong", cursive;
+        font-size: 3.2rem;
+        justify-content: center;
+        align-items: center;
+        display: flex;
+        margin-left: 100px;
+        margin-bottom: 18px;
+        color: #262626;
+        letter-spacing: 2px;
+        text-shadow: 0 1px 0 #fff, 0 2px 8px rgba(0, 0, 0, 0.04);
+      }
+      .form-control {
+        background: #fafafa;
+        border: 1px solid #dbdbdb;
+        border-radius: 6px;
+        padding: 10px 38px 10px 38px;
+        margin-bottom: 10px;
+        font-size: 1rem;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+        transition: border-color 0.2s, box-shadow 0.2s;
+      }
+      .form-control:focus {
+        border-color: #0095f6;
+        box-shadow: 0 0 0 2px rgba(0, 149, 246, 0.15);
+      }
+      .input-icon {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #b2b2b2;
+        font-size: 1.1rem;
+      }
+      .input-group {
+        position: relative;
+      }
+      .btn-primary {
+        background: linear-gradient(90deg, #0095f6 0%, #005bea 100%);
+        border: none;
+        border-radius: 6px;
+        color: white;
+        font-weight: 700;
+        padding: 10px 0;
+        width: 100%;
+        margin-top: 12px;
+        box-shadow: 0 2px 8px rgba(0, 149, 246, 0.08);
+        transition: background 0.2s;
+      }
+      .btn-primary:hover {
+        background: linear-gradient(90deg, #0080e0 0%, #005bea 100%);
+      }
+      .divider {
+        display: flex;
+        align-items: center;
+        margin: 18px 0 14px 0;
+        color: #8e8e8e;
+        font-size: 0.92rem;
+        font-weight: 600;
+      }
+      .divider::before,
+      .divider::after {
+        content: "";
+        flex: 1;
+        border-bottom: 1px solid #dbdbdb;
+      }
+      .divider::before {
+        margin-right: 10px;
+      }
+      .divider::after {
+        margin-left: 10px;
+      }
+      .footer-links {
+        margin-top: 24px;
+        font-size: 1rem;
+      }
+      .footer-links a {
+        color: #00376b;
+        text-decoration: none;
+        margin: 0 6px;
+        transition: color 0.2s;
+      }
+      .footer-links a:hover {
+        color: #0095f6;
+      }
+      .nav-tabs {
+        border: none;
+        justify-content: center;
+        margin-bottom: 28px;
+      }
+      .nav-tabs .nav-link {
+        border: none;
+        color: #8e8e8e;
+        font-weight: 700;
+        padding: 12px 32px;
+        font-size: 1.1rem;
+        border-radius: 0;
+        transition: color 0.2s, border-bottom 0.2s;
+      }
+      .nav-tabs .nav-link.active {
+        color: #0095f6;
+        background: transparent;
+        border-bottom: 3px solid #0095f6;
+      }
+      .nav-tabs .nav-link:hover {
+        color: #005bea;
+      }
+      .form-label {
+        font-weight: 600;
+        color: #262626;
+        font-size: 1rem;
+      }
+      .form-check-label {
+        font-size: 1rem;
+      }
+      .form-check-input:checked {
+        background-color: #0095f6;
+        border-color: #0095f6;
+      }
+      .signup-tagline {
+        font-size: 1.1rem;
+        color: #262626;
+        margin-bottom: 18px;
+        font-weight: 500;
+      }
+      .agreement-text {
+        font-size: 0.92rem;
+        color: #8e8e8e;
+        margin-top: 10px;
+      }
+      @media (max-width: 767px) {
+        .form-container {
+          padding: 32px 10px 24px 10px;
         }
         .auth-container {
-            background: rgba(255,255,255,0.95);
-            border-radius: 18px;
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18);
-            max-width: 950px;
-            width: 100%;
-            margin: 0 auto;
-            overflow: hidden;
-            border: 1px solid #e6e6e6;
+          border-radius: 0;
         }
-        .blueprint-container {
-            background: url('https://images.unsplash.com/photo-1581093450021-4a7360e9a6a3?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
-            background-size: cover;
-            background-position: center;
-            min-height: 600px;
-            position: relative;
-        }
-        .blueprint-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 82, 212, 0.32);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .blueprint-overlay h1 {
-            color: white;
-            font-size: 3.2rem;
-            font-weight: 700;
-            text-shadow: 0 2px 8px rgba(0,0,0,0.25);
-            letter-spacing: 2px;
-        }
-        .form-container {
-            padding: 48px 40px 36px 40px;
-            text-align: center;
-        }
-        .logo {
-            font-family: 'Billabong', cursive;
-            font-size: 3.2rem;
-            justify-content: center;
-            align-items: center;
-            display: flex;
-            margin-left: 100px;
-            margin-bottom: 18px;
-            color: #262626;
-            letter-spacing: 2px;
-            text-shadow: 0 1px 0 #fff, 0 2px 8px rgba(0,0,0,0.04);
-        }
-        .form-control {
-            background: #fafafa;
-            border: 1px solid #dbdbdb;
-            border-radius: 6px;
-            padding: 10px 38px 10px 38px;
-            margin-bottom: 10px;
-            font-size: 1rem;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
-            transition: border-color 0.2s, box-shadow 0.2s;
-        }
-        .form-control:focus {
-            border-color: #0095f6;
-            box-shadow: 0 0 0 2px rgba(0,149,246,0.15);
-        }
-        .input-icon {
-            position: absolute;
-            left: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #b2b2b2;
-            font-size: 1.1rem;
-        }
-        .input-group {
-            position: relative;
-        }
-        .btn-primary {
-            background: linear-gradient(90deg, #0095f6 0%, #005bea 100%);
-            border: none;
-            border-radius: 6px;
-            color: white;
-            font-weight: 700;
-            padding: 10px 0;
-            width: 100%;
-            margin-top: 12px;
-            box-shadow: 0 2px 8px rgba(0,149,246,0.08);
-            transition: background 0.2s;
-        }
-        .btn-primary:hover {
-            background: linear-gradient(90deg, #0080e0 0%, #005bea 100%);
-        }
-        .divider {
-            display: flex;
-            align-items: center;
-            margin: 18px 0 14px 0;
-            color: #8e8e8e;
-            font-size: 0.92rem;
-            font-weight: 600;
-        }
-        .divider::before, .divider::after {
-            content: "";
-            flex: 1;
-            border-bottom: 1px solid #dbdbdb;
-        }
-        .divider::before {
-            margin-right: 10px;
-        }
-        .divider::after {
-            margin-left: 10px;
-        }
-        .footer-links {
-            margin-top: 24px;
-            font-size: 1rem;
-        }
-        .footer-links a {
-            color: #00376b;
-            text-decoration: none;
-            margin: 0 6px;
-            transition: color 0.2s;
-        }
-        .footer-links a:hover {
-            color: #0095f6;
-        }
-        .nav-tabs {
-            border: none;
-            justify-content: center;
-            margin-bottom: 28px;
-        }
-        .nav-tabs .nav-link {
-            border: none;
-            color: #8e8e8e;
-            font-weight: 700;
-            padding: 12px 32px;
-            font-size: 1.1rem;
-            border-radius: 0;
-            transition: color 0.2s, border-bottom 0.2s;
-        }
-        .nav-tabs .nav-link.active {
-            color: #0095f6;
-            background: transparent;
-            border-bottom: 3px solid #0095f6;
-        }
-        .nav-tabs .nav-link:hover {
-            color: #005bea;
-        }
-        .form-label {
-            font-weight: 600;
-            color: #262626;
-            font-size: 1rem;
-        }
-        .form-check-label {
-            font-size: 1rem;
-        }
-        .form-check-input:checked {
-            background-color: #0095f6;
-            border-color: #0095f6;
-        }
-        .signup-tagline {
-            font-size: 1.1rem;
-            color: #262626;
-            margin-bottom: 18px;
-            font-weight: 500;
-        }
-        .agreement-text {
-            font-size: 0.92rem;
-            color: #8e8e8e;
-            margin-top: 10px;
-        }
-        @media (max-width: 767px) {
-            .form-container {
-                padding: 32px 10px 24px 10px;
-            }
-            .auth-container {
-                border-radius: 0;
-            }
-        }
-        @font-face {
-            font-family: 'Billabong';
-            src: url('https://fonts.cdnfonts.com/css/billabong') format('woff');
-        }
+      }
+      @font-face {
+        font-family: "Billabong";
+        src: url("https://fonts.cdnfonts.com/css/billabong") format("woff");
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <div class="row auth-container">
-            <div class="col-md-6 p-0 d-none d-md-block">
-                <div class="blueprint-container" style="background: none; display: flex; align-items: center; justify-content: center; min-height: 600px;">
-                    <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80" alt="Blueprint" style="max-width: 90%; max-height: 90%; border-radius: 12px; box-shadow: 0 4px 24px rgba(0,0,0,0.10); object-fit: cover;">
-                    <div class="blueprint-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 82, 212, 0.32); display: flex; align-items: center; justify-content: center;">
-                        <h1 style="z-index: 2;">LandSlot</h1>
-                    </div>
-                </div>
+      <div class="row auth-container">
+        <div class="col-md-6 p-0 d-none d-md-block">
+          <div
+            class="blueprint-container"
+            style="
+              background: none;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              min-height: 600px;
+            "
+          >
+            <img
+              src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80"
+              alt="Blueprint"
+              style="
+                max-width: 90%;
+                max-height: 90%;
+                border-radius: 12px;
+                box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+                object-fit: cover;
+              "
+            />
+            <div
+              class="blueprint-overlay"
+              style="
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 82, 212, 0.32);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              "
+            >
+              <h1 style="z-index: 2">LandSlot</h1>
             </div>
-            <div class="col-md-6 p-0">
-                <div class="form-container">
-                    <div class="logo" style="justify-content: center; align-items: center; display: flex;">
-                        <img src="/static/logo-landslot.svg" alt="LandSlot Logo" style="height: 54px; width: auto; display: block; margin: 0 auto;">
-                    </div>
-                    <ul class="nav nav-tabs" id="authTabs">
-                        <li class="nav-item">
-                            <a class="nav-link active" id="login-tab" data-bs-toggle="tab" href="#login">Log In</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" id="signup-tab" data-bs-toggle="tab" href="#signup">Sign Up</a>
-                        </li>
-                    </ul>
-                    <div class="tab-content">
-                        <div class="tab-pane fade show active" id="login">
-                            <form id="loginForm">
-                                <div class="input-group mb-2">
-                                    <span class="input-icon"><i class="fas fa-user"></i></span>
-                                    <input type="text" class="form-control" placeholder="Username or Email" id="login-username" style="padding-left: 38px;">
-                                </div>
-                                <div class="input-group mb-2">
-                                    <span class="input-icon"><i class="fas fa-lock"></i></span>
-                                    <input type="password" class="form-control" placeholder="Password" id="login-password" style="padding-left: 38px;">
-                                </div>
-                                <div class="mb-2 text-start">
-                                    <label class="form-label mb-1">I am a:</label><br>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="role" id="buyerRadio" value="buyer" checked>
-                                        <label class="form-check-label" for="buyerRadio">Buyer</label>
-                                    </div>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="role" id="sellerRadio" value="seller">
-                                        <label class="form-check-label" for="sellerRadio">Seller</label>
-                                    </div>
-                                </div>
-                                <button type="submit" class="btn btn-primary">Log In</button>
-                                <div class="divider">OR</div>
-                                <a href="#" class="d-block mb-3" style="color: #385185; font-weight: 600; font-size: 0.95rem;">
-                                    <i class="fab fa-facebook-square me-1"></i> Log in with Facebook
-                                </a>
-                                <a href="#" style="font-size: 0.9rem;">Forgot password?</a>
-                            </form>
-                        </div>
-                        <div class="tab-pane fade" id="signup">
-                            <div class="signup-tagline">Create your account and start your journey with LandSlot!</div>
-                            <form>
-                                <div class="input-group mb-2">
-                                    <span class="input-icon"><i class="fas fa-user"></i></span>
-                                    <input type="text" class="form-control" placeholder="Full Name" style="padding-left: 38px;">
-                                </div>
-                                <div class="input-group mb-2">
-                                    <span class="input-icon"><i class="fas fa-envelope"></i></span>
-                                    <input type="email" class="form-control" placeholder="Email" style="padding-left: 38px;">
-                                </div>
-                                <div class="input-group mb-2">
-                                    <span class="input-icon"><i class="fas fa-lock"></i></span>
-                                    <input type="password" class="form-control" placeholder="Password" style="padding-left: 38px;">
-                                </div>
-                                <button type="submit" class="btn btn-primary">Sign Up</button>
-                                <div class="agreement-text">
-                                    By signing up, you agree to our <a href="#">Terms</a>, <a href="#">Data Policy</a> and <a href="#">Cookies Policy</a>.
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                    <div class="footer-links">
-                        <a href="#">Privacy Policy</a> · <a href="#">Terms</a> · <a href="#">Help</a>
-                    </div>
-                </div>
-            </div>
+          </div>
         </div>
+        <div class="col-md-6 p-0">
+          <div class="form-container">
+            <div
+              class="logo"
+              style="
+                justify-content: center;
+                align-items: center;
+                display: flex;
+              "
+            >
+              <img
+                src="/static/logo-landslot.svg"
+                alt="LandSlot Logo"
+                style="
+                  height: 54px;
+                  width: auto;
+                  display: block;
+                  margin: 0 auto;
+                "
+              />
+            </div>
+            <ul class="nav nav-tabs" id="authTabs">
+              <li class="nav-item">
+                <a
+                  class="nav-link active"
+                  id="login-tab"
+                  data-bs-toggle="tab"
+                  href="#login"
+                  >Log In</a
+                >
+              </li>
+              <li class="nav-item">
+                <a
+                  class="nav-link"
+                  id="signup-tab"
+                  data-bs-toggle="tab"
+                  href="#signup"
+                  >Sign Up</a
+                >
+              </li>
+            </ul>
+            <div class="tab-content">
+              <div class="tab-pane fade show active" id="login">
+                <form id="loginForm" method="POST" action="/login">
+                  <div class="input-group mb-2">
+                    <span class="input-icon"><i class="fas fa-user"></i></span>
+                    <input
+                      type="text"
+                      class="form-control"
+                      placeholder="Username or Email"
+                      id="login-username"
+                      name="username"
+                      style="padding-left: 38px"
+                    />
+                  </div>
+                  <div class="input-group mb-2">
+                    <span class="input-icon"><i class="fas fa-lock"></i></span>
+                    <input
+                      type="password"
+                      class="form-control"
+                      placeholder="Password"
+                      id="login-password"
+                      name="password"
+                      style="padding-left: 38px"
+                    />
+                  </div>
+                  <div class="mb-2 text-start">
+                    <label class="form-label mb-1">I am a:</label><br />
+                    <div class="form-check form-check-inline">
+                      <input
+                        class="form-check-input"
+                        type="radio"
+                        name="role"
+                        id="buyerRadio"
+                        value="buyer"
+                        checked
+                      />
+                      <label class="form-check-label" for="buyerRadio"
+                        >Buyer</label
+                      >
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input
+                        class="form-check-input"
+                        type="radio"
+                        name="role"
+                        id="sellerRadio"
+                        value="seller"
+                      />
+                      <label class="form-check-label" for="sellerRadio"
+                        >Seller</label
+                      >
+                    </div>
+                  </div>
+                  <button type="submit" class="btn btn-primary">Log In</button>
+                  <div class="divider">OR</div>
+                  <a
+                    href="#"
+                    class="d-block mb-3"
+                    style="color: #385185; font-weight: 600; font-size: 0.95rem"
+                  >
+                    <i class="fab fa-facebook-square me-1"></i> Log in with
+                    Facebook
+                  </a>
+                  <a href="#" style="font-size: 0.9rem">Forgot password?</a>
+                </form>
+              </div>
+              <div class="tab-pane fade" id="signup">
+                <div class="signup-tagline">
+                  Create your account and start your journey with LandSlot!
+                </div>
+                <form action="/signup" method="POST">
+                  <div class="input-group mb-2">
+                    <span class="input-icon"><i class="fas fa-user"></i></span>
+                    <input
+                      type="text"
+                      class="form-control"
+                      placeholder="Full Name"
+                      name="full_name"
+                      style="padding-left: 38px"
+                    />
+                  </div>
+                  <div class="input-group mb-2">
+                    <span class="input-icon"
+                      ><i class="fas fa-envelope"></i
+                    ></span>
+                    <input
+                      type="email"
+                      class="form-control"
+                      placeholder="Email"
+                      name="email"
+                      style="padding-left: 38px"
+                    />
+                  </div>
+                  <div class="input-group mb-2">
+                    <span class="input-icon"><i class="fas fa-lock"></i></span>
+                    <input
+                      type="password"
+                      class="form-control"
+                      placeholder="Password"
+                      name="password"
+                      style="padding-left: 38px"
+                    />
+                  </div>
+                  <button type="submit" class="btn btn-primary">Sign Up</button>
+                  <div class="agreement-text">
+                    By signing up, you agree to our <a href="#">Terms</a>,
+                    <a href="#">Data Policy</a> and
+                    <a href="#">Cookies Policy</a>.
+                  </div>
+                </form>
+              </div>
+            </div>
+            <div class="footer-links">
+              <a href="#">Privacy Policy</a> · <a href="#">Terms</a> ·
+              <a href="#">Help</a>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
     <!-- Font Awesome for icons -->
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script
+      src="https://kit.fontawesome.com/a076d05399.js"
+      crossorigin="anonymous"
+    ></script>
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-    document.getElementById('loginForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        window.location.href = '/';
-    });
-    </script>
-</body>
+    <!-- <script>
+      //   document
+      //     // .getElementById("loginForm")
+      //     // .addEventListener("submit", function (e) {
+      //     //   e.preventDefault();
+      //       //window.location.href = "/";
+      //     });
+    </script> -->
+  </body>
 </html>
