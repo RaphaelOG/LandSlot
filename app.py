@@ -7,13 +7,14 @@ from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, timedelta
 from transformers import AutoTokenizer, AutoModelForCausalLM
-from transformers.pipelines import pipeline
+from transformers import pipeline
 import torch
 from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token
 from sqlalchemy import Column, String, JSON, Integer, Boolean, DateTime, Float, ForeignKey
 from dotenv import load_dotenv
 import boto3
+import re
 
 # AI Model Configuration
 device = "cpu"  # Force CPU usage
@@ -274,7 +275,14 @@ def home():
                          search_query.lower() in f"{slot['x']},{slot['y']}".lower() or
                          search_query.lower() in slot['price'].lower() or
                          (slot['buyer_info'] and search_query.lower() in slot['buyer_info']['name'].lower())]
-    
+
+    # Filter by recommended IDs (if present)
+    recommended = request.args.get('recommended')
+    if recommended:
+        ids = [int(x) for x in recommended.split(',')]
+        filtered_slots = [slot for slot in filtered_slots if slot['id'] in ids]
+        # Optionally, set a flag to show a message like "Showing recommended plots"
+
     total_slots = len(filtered_slots)
     total_pages = (total_slots + per_page - 1) // per_page
     start = (page - 1) * per_page
@@ -550,18 +558,41 @@ def ai_recommend():
         try:
             prompt = build_granite_prompt(budget, zone, size)
             recommendation = query_granite_model(prompt)
-            return render_template('ai_recommendation.html', 
-                                recommendation=recommendation,
-                                budget=budget,
-                                zone=zone,
-                                size=size)
+            recommendation = remove_prompt_echo(prompt, recommendation)
+            recommended_ids = extract_ids_from_recommendation(recommendation)
+            if recommended_ids:
+                return redirect(url_for('home', recommended=','.join(map(str, recommended_ids))))
         except Exception as e:
             flash(f'Error generating recommendation: {str(e)}', 'error')
             return redirect(url_for('ai_recommend'))
     
     return render_template('ai_recommendation.html')
 
-@app.route('/login', methods =['GET', 'POST'])
+@app.route('/recommend', methods=['GET', 'POST'])
+def recommend_form():
+    if request.method == 'POST':
+        budget = request.form.get('budget')
+        zone = request.form.get('zone')
+        size = request.form.get('size')
+
+        if not budget or not zone:
+            flash('Please provide at least budget and zone information.', 'error')
+            return redirect(url_for('recommend_form'))
+
+        try:
+            prompt = build_granite_prompt(budget, zone, size)
+            recommendation = query_granite_model(prompt)
+            recommendation = remove_prompt_echo(prompt, recommendation)
+            recommended_ids = extract_ids_from_recommendation(recommendation)
+            if recommended_ids:
+                return redirect(url_for('home', recommended=','.join(map(str, recommended_ids))))
+        except Exception as e:
+            flash(f'Error generating recommendation: {str(e)}', 'error')
+            return redirect(url_for('recommend_form'))
+
+    return render_template('recommend_form.html')
+
+@app.route('/login')
 def login():
     if request.method == 'GET':
         return render_template('login.html')
@@ -671,24 +702,38 @@ def chatbot():
 # Based on the above, answer the user's last question or provide recommendations if asked.
 # """.strip()
 
-            # Query Granite model
             try:
                 ai_response = query_granite_model(prompt)
-                # Only return the new response (strip prompt echo if any)
-                ai_response = ai_response[len(prompt):].strip() if ai_response.startswith(prompt) else ai_response
+                ai_response = remove_prompt_echo(prompt, ai_response)
             except Exception as e:
                 ai_response = f"Sorry, I couldn't process your request: {str(e)}"
 
-            # Add AI response to history
             chat_history.append({'role': 'assistant', 'content': ai_response})
             session['chat_history'] = chat_history
 
         return render_template('chatbot.html', chat_history=chat_history)
 
-    # GET: show chat UI
     return render_template('chatbot.html', chat_history=session.get('chat_history', []))
 
 
+def remove_prompt_echo(prompt, response):
+    response_clean = response.lstrip()
+    prompt_clean = prompt.strip()
+    if response_clean.startswith(prompt_clean):
+        return response_clean[len(prompt_clean):].lstrip()
+    for sep in ["\n\n", "\n", ":"]:
+        if sep in response_clean:
+            parts = response_clean.split(sep, 1)
+            if len(parts) > 1:
+                return parts[1].lstrip()
+    return response_clean 
+
+def extract_ids_from_recommendation(recommendation):
+    ids = re.findall(r'ID\s*(\d+)|Plot\s*(\d+)', recommendation)
+    flat_ids = [int(num) for tup in ids for num in tup if num]
+    if not flat_ids:
+        flat_ids = [int(x) for x in re.findall(r'\b\d+\b', recommendation)]
+    return sorted(set(flat_ids))
 
 if __name__ == '__main__':
     try:
