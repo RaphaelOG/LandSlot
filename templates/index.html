@@ -459,6 +459,101 @@
             border-bottom-left-radius: 4px;
             border: 1.5px solid #e0e7ff;
         }
+
+        .btn-logout:hover {
+            background: #cbd5e1;
+        }
+        .profile-placeholder {
+            text-align: center;
+            color: #64748b;
+            padding: 32px 0 0 0;
+            font-size: 1.1rem;
+        }
+        
+        /* Perspective Toggle Styles */
+        .perspective-btn {
+            background: transparent !important;
+            color: #64748b !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        .perspective-btn:hover {
+            background: rgba(37, 99, 235, 0.1) !important;
+            color: #2563eb !important;
+        }
+        
+        .perspective-btn.active {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+            color: white !important;
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3) !important;
+        }
+        
+        .perspective-btn.active:hover {
+            background: linear-gradient(135deg, #1d4ed8, #1e40af) !important;
+            color: white !important;
+        }
+        
+        /* Buyer mode active button styles */
+        .buyer-mode .perspective-btn.active {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3) !important;
+        }
+        
+        .buyer-mode .perspective-btn.active:hover {
+            background: linear-gradient(135deg, #1d4ed8, #1e40af) !important;
+        }
+        
+        .buyer-mode .perspective-btn:hover {
+            background: rgba(37, 99, 235, 0.1) !important;
+            color: #2563eb !important;
+        }
+        
+        /* Buyer mode styles - keeping blue theme */
+        .buyer-mode .upload-area {
+            background: linear-gradient(145deg, #f8fafc, #e2e8f0) !important;
+            border: 2px dashed #2563eb !important;
+        }
+        
+        .buyer-mode .upload-area:hover {
+            border-color: #1d4ed8 !important;
+            box-shadow: 0 6px 24px rgba(37, 99, 235, 0.15) !important;
+        }
+        
+        .buyer-mode .upload-icon {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+        }
+        
+        .buyer-mode .btn-primary-custom {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+        }
+        
+        .buyer-mode .btn-primary-custom:hover {
+            background: linear-gradient(135deg, #1d4ed8, #1e40af) !important;
+        }
+        
+        .buyer-mode .hero-section h1 {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+            -webkit-background-clip: text !important;
+            -webkit-text-fill-color: transparent !important;
+            background-clip: text !important;
+        }
+        
+        .buyer-mode .stats-card {
+            border: 1px solid rgba(37, 99, 235, 0.2) !important;
+        }
+        
+        .buyer-mode .filter-btn.active {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+        }
+        
+        .buyer-mode .search-container {
+            border: 2px solid rgba(37, 99, 235, 0.2) !important;
+        }
+        
+        .buyer-mode .search-container:focus-within {
+            border-color: #2563eb !important;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important;
+        }
     </style>
 </head>
 <body>
@@ -489,6 +584,16 @@
                         </a>
                     </li>
                     -->
+                    <li class="nav-item me-3">
+                        <div class="d-flex align-items-center" style="background: #f8fafc; border-radius: 20px; padding: 4px; border: 1px solid #e2e8f0;">
+                            <button id="sellerMode" class="btn btn-sm px-3 py-1 me-1 perspective-btn active" style="border-radius: 16px; font-size: 0.85rem; font-weight: 600; border: none; transition: all 0.3s ease;">
+                                <i class="fas fa-store me-1"></i>Seller
+                            </button>
+                            <button id="buyerMode" class="btn btn-sm px-3 py-1 perspective-btn" style="border-radius: 16px; font-size: 0.85rem; font-weight: 600; border: none; transition: all 0.3s ease;">
+                                <i class="fas fa-shopping-cart me-1"></i>Buyer
+                            </button>
+                        </div>
+                    </li>
                     <li class="nav-item me-2">
                         <a href="/login" class="nav-link nav-modern-link">Login</a>
                     </li>
@@ -1000,6 +1105,169 @@
             })
             .finally(() => chatbotInput.disabled = false);
         };
+        
+        // Perspective Toggle Functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const sellerBtn = document.getElementById('sellerMode');
+            const buyerBtn = document.getElementById('buyerMode');
+            const body = document.body;
+            
+            // Check if user has a saved preference
+            const savedPerspective = localStorage.getItem('landslot_perspective') || 'seller';
+            
+            // Set initial state
+            if (savedPerspective === 'buyer') {
+                buyerBtn.classList.add('active');
+                sellerBtn.classList.remove('active');
+                body.classList.add('buyer-mode');
+            } else {
+                sellerBtn.classList.add('active');
+                buyerBtn.classList.remove('active');
+                body.classList.remove('buyer-mode');
+            }
+            
+            // Seller mode click handler
+            sellerBtn.addEventListener('click', function() {
+                sellerBtn.classList.add('active');
+                buyerBtn.classList.remove('active');
+                body.classList.remove('buyer-mode');
+                localStorage.setItem('landslot_perspective', 'seller');
+                
+                // Update UI text for seller mode
+                updateUIForSeller();
+            });
+            
+            // Buyer mode click handler
+            buyerBtn.addEventListener('click', function() {
+                buyerBtn.classList.add('active');
+                sellerBtn.classList.remove('active');
+                body.classList.add('buyer-mode');
+                localStorage.setItem('landslot_perspective', 'buyer');
+                
+                // Update UI text for buyer mode
+                updateUIForBuyer();
+            });
+            
+            // Function to update UI for seller mode
+            function updateUIForSeller() {
+                const heroTitle = document.querySelector('.hero-section h1');
+                const uploadTitle = document.querySelector('.upload-area h4');
+                const uploadDesc = document.querySelector('.upload-area p');
+                const uploadBtn = document.querySelector('.upload-area .btn');
+                const uploadIcon = document.querySelector('.upload-icon i');
+                const uploadArea = document.querySelector('.upload-area');
+                
+                if (heroTitle) heroTitle.innerHTML = '<i class="fas fa-map-marked-alt me-3"></i>LandSlot';
+                
+                // Restore seller upload section
+                if (uploadArea) {
+                    uploadArea.innerHTML = `
+                        <!-- Decorative elements -->
+                        <div style="position: absolute; top: -20px; right: -20px; width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(37, 99, 235, 0.05)); z-index: 0;"></div>
+                        <div style="position: absolute; bottom: -30px; left: -30px; width: 150px; height: 150px; border-radius: 50%; background: linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(37, 99, 235, 0.03)); z-index: 0;"></div>
+                        
+                        <div class="upload-icon" style="background: linear-gradient(135deg, #2563eb, #1d4ed8); width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 25px; box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);">
+                            <i class="fas fa-cloud-upload-alt" style="font-size: 2.5rem; color: white;"></i>
+                        </div>
+                        
+                        <h4 style="font-weight: 700; font-size: 1.5rem; margin-bottom: 15px; text-align: center; position: relative; z-index: 1;">
+                            <i class="fas fa-map me-2" style="color: #2563eb;"></i>Upload Map Image
+                        </h4>
+                        
+                        <p class="text-muted" style="text-align: center; margin-bottom: 25px; font-size: 1.05rem; position: relative; z-index: 1;">
+                            Upload your blueprint or map to generate land slots
+                        </p>
+                        
+                        <form method="POST" action="/upload" enctype="multipart/form-data" style="position: relative; z-index: 1;">
+                            <div class="mb-4">
+                                <div class="custom-file-container" style="border: 2px dashed rgba(37, 99, 235, 0.3); border-radius: 12px; padding: 15px; background-color: rgba(255, 255, 255, 0.7); transition: all 0.3s ease;">
+                                    <input class="form-control" type="file" name="file" accept="image/*" required style="border: none; background-color: transparent;">
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary-custom btn-custom" style="background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; border: none; border-radius: 30px; padding: 12px 30px; width: 100%; font-weight: 600; font-size: 1.1rem; box-shadow: 0 8px 15px rgba(37, 99, 235, 0.2); transition: all 0.3s ease;">
+                                <i class="fas fa-magic me-2"></i>Generate Land Slots
+                            </button>
+                        </form>
+                    `;
+                }
+            }
+            
+            // Function to update UI for buyer mode
+            function updateUIForBuyer() {
+                const heroTitle = document.querySelector('.hero-section h1');
+                const uploadArea = document.querySelector('.upload-area');
+                
+                if (heroTitle) heroTitle.innerHTML = '<i class="fas fa-shopping-cart me-3"></i>LandSlot';
+                
+                // Replace with buyer section
+                if (uploadArea) {
+                    uploadArea.innerHTML = `
+                        <!-- Decorative elements -->
+                        <div style="position: absolute; top: -20px; right: -20px; width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(37, 99, 235, 0.05)); z-index: 0;"></div>
+                        <div style="position: absolute; bottom: -30px; left: -30px; width: 150px; height: 150px; border-radius: 50%; background: linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(37, 99, 235, 0.03)); z-index: 0;"></div>
+                        
+                        <div class="upload-icon" style="background: linear-gradient(135deg, #2563eb, #1d4ed8); width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 25px; box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);">
+                            <i class="fas fa-search" style="font-size: 2.5rem; color: white;"></i>
+                        </div>
+                        
+                        <h4 style="font-weight: 700; font-size: 1.5rem; margin-bottom: 15px; text-align: center; position: relative; z-index: 1;">
+                            <i class="fas fa-search me-2" style="color: #2563eb;"></i>Discover Available Land
+                        </h4>
+                        
+                        <p class="text-muted" style="text-align: center; margin-bottom: 25px; font-size: 1.05rem; position: relative; z-index: 1;">
+                            Browse through available land slots and find your perfect investment opportunity
+                        </p>
+                        
+                        <div style="position: relative; z-index: 1;">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <div class="feature-card" style="background: white; border-radius: 12px; padding: 20px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 15px;">
+                                        <i class="fas fa-map-marked-alt" style="font-size: 2rem; color: #2563eb; margin-bottom: 10px;"></i>
+                                        <h6 style="font-weight: 600; margin-bottom: 8px;">Interactive Map</h6>
+                                        <p style="font-size: 0.9rem; color: #64748b; margin: 0;">Explore land slots visually</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="feature-card" style="background: white; border-radius: 12px; padding: 20px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 15px;">
+                                        <i class="fas fa-chart-line" style="font-size: 2rem; color: #2563eb; margin-bottom: 10px;"></i>
+                                        <h6 style="font-weight: 600; margin-bottom: 8px;">Market Insights</h6>
+                                        <p style="font-size: 0.9rem; color: #64748b; margin: 0;">Get pricing and trends</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="feature-card" style="background: white; border-radius: 12px; padding: 20px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 15px;">
+                                        <i class="fas fa-handshake" style="font-size: 2rem; color: #2563eb; margin-bottom: 10px;"></i>
+                                        <h6 style="font-weight: 600; margin-bottom: 8px;">Easy Booking</h6>
+                                        <p style="font-size: 0.9rem; color: #64748b; margin: 0;">Reserve slots instantly</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="feature-card" style="background: white; border-radius: 12px; padding: 20px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 15px;">
+                                        <i class="fas fa-shield-alt" style="font-size: 2rem; color: #2563eb; margin-bottom: 10px;"></i>
+                                        <h6 style="font-weight: 600; margin-bottom: 8px;">Secure Transactions</h6>
+                                        <p style="font-size: 0.9rem; color: #64748b; margin: 0;">Safe payment processing</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <a href="/map" class="btn btn-primary-custom btn-custom" style="background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; border: none; border-radius: 30px; padding: 12px 30px; width: 100%; font-weight: 600; font-size: 1.1rem; box-shadow: 0 8px 15px rgba(37, 99, 235, 0.2); transition: all 0.3s ease; text-decoration: none; display: inline-block;">
+                                <i class="fas fa-search me-2"></i>Browse Available Land
+                            </a>
+                        </div>
+                    `;
+                }
+            }
+            
+            // Initialize UI based on current mode
+            if (savedPerspective === 'buyer') {
+                updateUIForBuyer();
+            } else {
+                updateUIForSeller();
+            }
+        });
     </script>
 </body>
 </html>
