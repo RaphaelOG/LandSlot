@@ -11,11 +11,11 @@ import torch
 import re
 
 # AI Model Configuration
-device = "cpu"  # Force CPU usage
+device = "cuda" if torch.cuda.is_available() else "cpu"
 model_path = "ibm-granite/granite-3.3-2b-base"
 tokenizer = AutoTokenizer.from_pretrained(model_path)
 model = AutoModelForCausalLM.from_pretrained(model_path).to(device)
-pipe = pipeline("text-generation", model=model, tokenizer=tokenizer, device=-1)
+pipe = pipeline("text-generation", model=model, tokenizer=tokenizer, device=0 if device == "cuda" else -1)
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
