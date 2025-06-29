@@ -142,6 +142,29 @@
             padding: 32px 0 0 0;
             font-size: 1.1rem;
         }
+        
+        /* Perspective Toggle Styles */
+        .perspective-btn {
+            background: transparent !important;
+            color: #64748b !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        .perspective-btn:hover {
+            background: rgba(37, 99, 235, 0.1) !important;
+            color: #2563eb !important;
+        }
+        
+        .perspective-btn.active {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+            color: white !important;
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3) !important;
+        }
+        
+        .perspective-btn.active:hover {
+            background: linear-gradient(135deg, #1d4ed8, #1e40af) !important;
+            color: white !important;
+        }
     </style>
 </head>
 <body>
@@ -153,7 +176,7 @@
                 </a>
             </div>
             <div class="profile-avatar-wrap">
-                <img src="{{ user.avatar or 'https://randomuser.me/api/portraits/men/32.jpg' }}" alt="Avatar" class="profile-avatar">
+                <img src="{{ user.avatar or 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png' }}" alt="Avatar" class="profile-avatar">
                 {% if user.name %}
                 <div class="profile-name">{{ user.name }}</div>
                 {% else %}
@@ -169,10 +192,12 @@
         {% if user.name and user.email %}
         <div class="profile-summary">
             <div class="summary-grid">
+                {% if user.role == 'buyer' %}
+                <!-- Buyer Statistics -->
                 <div class="summary-card">
-                    <div class="summary-icon"><i class="fas fa-map-marked-alt"></i></div>
+                    <div class="summary-icon"><i class="fas fa-shopping-cart"></i></div>
                     <div class="summary-number">{{ user.owned_count or 0 }}</div>
-                    <div class="summary-label">Owned</div>
+                    <div class="summary-label">Purchased</div>
                 </div>
                 <div class="summary-card">
                     <div class="summary-icon"><i class="fas fa-bookmark"></i></div>
@@ -187,8 +212,31 @@
                 <div class="summary-card">
                     <div class="summary-icon"><i class="fas fa-check-circle"></i></div>
                     <div class="summary-number">{{ user.sold_count or 0 }}</div>
+                    <div class="summary-label">Completed</div>
+                </div>
+                {% else %}
+                <!-- Seller Statistics -->
+                <div class="summary-card">
+                    <div class="summary-icon"><i class="fas fa-map-marked-alt"></i></div>
+                    <div class="summary-number">{{ user.owned_count or 0 }}</div>
+                    <div class="summary-label">Total Slots</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-icon"><i class="fas fa-check-circle"></i></div>
+                    <div class="summary-number">{{ user.available_count or 0 }}</div>
+                    <div class="summary-label">Available</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-icon"><i class="fas fa-clock"></i></div>
+                    <div class="summary-number">{{ user.pending_count or 0 }}</div>
+                    <div class="summary-label">Pending</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-icon"><i class="fas fa-dollar-sign"></i></div>
+                    <div class="summary-number">{{ user.sold_count or 0 }}</div>
                     <div class="summary-label">Sold</div>
                 </div>
+                {% endif %}
             </div>
         </div>
         {% else %}
@@ -199,7 +247,19 @@
         {% endif %}
         <div class="profile-actions">
             <button type="button" class="btn btn-edit" data-bs-toggle="modal" data-bs-target="#editProfileModal"><i class="fas fa-user-edit me-2"></i>Edit Profile</button>
-            <a href="#" class="btn btn-logout"><i class="fas fa-sign-out-alt me-2"></i>Logout</a>
+            <a href="/logout" class="btn btn-logout"><i class="fas fa-sign-out-alt me-2"></i>Logout</a>
+        </div>
+
+        <!-- Perspective Toggle -->
+        <div class="profile-actions" style="padding-top: 0;">
+            <div class="d-flex align-items-center justify-content-center" style="background: #f8fafc; border-radius: 20px; padding: 4px; border: 1px solid #e2e8f0;">
+                <button id="sellerMode" class="btn btn-sm px-3 py-1 me-1 perspective-btn" style="border-radius: 16px; font-size: 0.85rem; font-weight: 600; border: none; transition: all 0.3s ease;">
+                    <i class="fas fa-store me-1"></i>Seller View
+                </button>
+                <button id="buyerMode" class="btn btn-sm px-3 py-1 perspective-btn" style="border-radius: 16px; font-size: 0.85rem; font-weight: 600; border: none; transition: all 0.3s ease;">
+                    <i class="fas fa-shopping-cart me-1"></i>Buyer View
+                </button>
+            </div>
         </div>
 
         <!-- Edit Profile Modal -->
@@ -213,7 +273,7 @@
                     <form method="POST" action="/profile">
                         <div class="modal-body">
                             <div class="mb-3 text-center">
-                                <img src="{{ user.avatar or 'https://randomuser.me/api/portraits/men/32.jpg' }}" alt="Avatar" class="profile-avatar mb-2" style="width: 80px; height: 80px;">
+                                <img src="{{ user.avatar or 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png' }}" alt="Avatar" class="profile-avatar mb-2" style="width: 80px; height: 80px;">
                                 <input type="url" class="form-control" id="avatar" name="avatar" placeholder="Avatar Image URL" value="{{ user.avatar }}">
                             </div>
                             <div class="mb-3">
@@ -236,5 +296,46 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script>
+        // Perspective Toggle Functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const sellerBtn = document.getElementById('sellerMode');
+            const buyerBtn = document.getElementById('buyerMode');
+            
+            // Check if user has a saved preference
+            const savedPerspective = localStorage.getItem('landslot_perspective') || 'seller';
+            
+            // Set initial state without redirecting
+            if (savedPerspective === 'buyer') {
+                buyerBtn.classList.add('active');
+                sellerBtn.classList.remove('active');
+            } else {
+                sellerBtn.classList.add('active');
+                buyerBtn.classList.remove('active');
+            }
+            
+            // Seller mode click handler
+            sellerBtn.addEventListener('click', function() {
+                sellerBtn.classList.add('active');
+                buyerBtn.classList.remove('active');
+                localStorage.setItem('landslot_perspective', 'seller');
+                loadProfileData('seller');
+            });
+            
+            // Buyer mode click handler
+            buyerBtn.addEventListener('click', function() {
+                buyerBtn.classList.add('active');
+                sellerBtn.classList.remove('active');
+                localStorage.setItem('landslot_perspective', 'buyer');
+                loadProfileData('buyer');
+            });
+            
+            // Function to load profile data based on perspective
+            function loadProfileData(perspective) {
+                // Redirect to profile with perspective parameter
+                window.location.href = `/profile?perspective=${perspective}`;
+            }
+        });
+    </script>
 </body>
 </html> 

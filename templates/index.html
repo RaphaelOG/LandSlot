@@ -554,6 +554,21 @@
             border-color: #2563eb !important;
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important;
         }
+
+        /* Avatar hover effects */
+        .avatar-placeholder {
+            transition: all 0.2s ease;
+        }
+        
+        .avatar-placeholder:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+            border-color: #0095f6 !important;
+        }
+        
+        .avatar-placeholder:hover i {
+            color: #0095f6 !important;
+        }
     </style>
 </head>
 <body>
@@ -578,6 +593,11 @@
                             <i class="fas fa-map me-1"></i>Map
                         </a>
                     </li>
+                    <li class="nav-item me-2">
+                        <a href="/recommend" class="nav-link d-flex align-items-center nav-modern-link">
+                            <i class="fas fa-lightbulb me-1"></i>Recommend
+                        </a>
+                    </li>
                     <!--<li class="nav-item me-2">
                         <a href="/profile" class="nav-link d-flex align-items-center nav-modern-link">
                             <i class="fas fa-user-circle me-1"></i>Profile
@@ -594,16 +614,17 @@
                             </button>
                         </div>
                     </li>
+                    {% if not session['username'] %}
                     <li class="nav-item me-2">
                         <a href="/login" class="nav-link nav-modern-link">Login</a>
                     </li>
                     <li class="nav-item me-2">
                         <a href="/login" class="btn btn-dark px-4 py-2 nav-modern-btn">Sign Up</a>
                     </li>
-                    {% if session['user'] %}
+                    {% else %}
                     <li class="nav-item ms-3">
-                        <a href="/profile" class="d-flex align-items-center">
-                            <span class="avatar-placeholder" style="width:36px; height:36px; border-radius:50%; background:#f3f4f6; display:inline-block; border:2px solid #e5e7eb; box-shadow:0 1px 4px rgba(0,0,0,0.04);">
+                        <a href="#" onclick="goToProfile()" class="d-flex align-items-center" style="text-decoration: none; transition: transform 0.2s ease;">
+                            <span class="avatar-placeholder" style="width:36px; height:36px; border-radius:50%; background:#f3f4f6; display:inline-block; border:2px solid #e5e7eb; box-shadow:0 1px 4px rgba(0,0,0,0.04); transition: all 0.2s ease; cursor: pointer;">
                                 <i class="fas fa-user" style="color:#3b3b3b; font-size:1.3rem; line-height:36px; text-align:center; width:100%; display:inline-block;"></i>
                             </span>
                         </a>
@@ -1268,6 +1289,13 @@
                 updateUIForSeller();
             }
         });
+
+        function goToProfile() {
+            // Get the current perspective from localStorage
+            const currentPerspective = localStorage.getItem('landslot_perspective') || 'seller';
+            // Navigate to profile with the current perspective
+            window.location.href = `/profile?perspective=${currentPerspective}`;
+        }
     </script>
 </body>
 </html>

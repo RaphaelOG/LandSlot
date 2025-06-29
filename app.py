@@ -66,7 +66,7 @@ class UserModel(db.Model):
     email = Column(String(50), unique=True, nullable=False, index=True)
     full_name = Column(String(100), nullable=False)
     password = Column(String(200), nullable=False, index=True)
-    phone_number = Column(String(15), unique=True ,nullable=False)
+    phone_number = Column(String(15), unique=False ,nullable=False)
     created_at = Column(DateTime, nullable=False)
     address = Column(String(75), nullable=False)
     land_slots = db.relationship('LandSlotModel', backref = 'user', lazy = True)
@@ -342,14 +342,14 @@ def signup():
 
         #Currently has dummy data
         #Receives fields from fronted and checks if username is in use
-        username = "test" #request.form.get('username')
-        email = "test@gmail.com"#request.form.get('email')
+        username = request.form.get('username')
+        email =  request.form.get('email')
         password = request.form.get('password')
         full_name = request.form.get('full_name')
         print(password, full_name, "password")
         address = "address"#request.form.get('address')
         phone_number = "phone"#request.form.get('phone_number')
-        # profile_picture = request.files.get('profile_picture')
+        #profile_picture = request.files.get('profile_picture')
         checkUsername = UserModel.query.filter_by(username=username).first()
         
         if checkUsername:
@@ -393,7 +393,6 @@ def set_land_slot(slot_id):
     
 
 @app.route('/reserve/<int:slot_id>', methods=['GET', 'POST'])
-@jwt_required()
 def reserve_slot(slot_id):
     global land_slots
     
@@ -425,7 +424,6 @@ def reserve_slot(slot_id):
     return redirect(url_for('home'))
 
 @app.route('/confirm_purchase/<int:slot_id>', methods=['POST'])
-@jwt_required()
 def confirm_purchase(slot_id):
     global land_slots
     
@@ -456,7 +454,6 @@ def confirm_purchase(slot_id):
     return redirect(url_for('home'))
 
 @app.route('/cancel_reservation/<int:slot_id>')
-@jwt_required()
 def cancel_reservation(slot_id):
     global land_slots
     
@@ -592,7 +589,7 @@ def recommend_form():
 
     return render_template('recommend_form.html')
 
-@app.route('/login')
+@app.route('/login', methods = ['GET', 'POST'])
 def login():
     if request.method == 'GET':
         return render_template('login.html')
@@ -646,25 +643,61 @@ def profile():
         }
         return redirect(url_for('profile'))
 
+    # Get current logged in user's username
+    current_username = session.get('username')
+    
+    # Get perspective from query parameter (buyer or seller)
+    perspective = request.args.get('perspective', 'seller')
+    
     user = session.get('user', {
         'avatar': '',
         'name': '',
         'email': '',
     })
-    # Calculate user's reserved and sold plots
-    reserved_count = 0
-    sold_count = 0
-    for slot in land_slots:
-        if slot.get('buyer_info') and user.get('name') and slot['buyer_info'].get('name') == user['name']:
-            if slot['status'] == 'pending':
-                reserved_count += 1
-            elif slot['status'] == 'sold':
-                sold_count += 1
-    user['reserved_count'] = reserved_count
-    user['sold_count'] = sold_count
     
-    user['owned_count'] = reserved_count + sold_count
-    user['pending_count'] = reserved_count
+    # Initialize counters
+    buyer_reserved_count = 0
+    buyer_sold_count = 0
+    seller_available_count = 0
+    seller_pending_count = 0
+    seller_sold_count = 0
+    
+    # Calculate statistics based on perspective
+    for slot in land_slots:
+        if perspective == 'buyer':
+            # Calculate buyer statistics - slots where user is the buyer
+            if slot.get('buyer_info') and user.get('name') and slot['buyer_info'].get('name') == user['name']:
+                if slot['status'] == 'pending':
+                    buyer_reserved_count += 1
+                elif slot['status'] == 'sold':
+                    buyer_sold_count += 1
+        else:
+            # Calculate seller statistics - slots that belong to the current user
+            # For now, we'll assume all slots without buyer_info belong to the current user
+            # In a real app, you'd have an owner field in the slot data
+            if not slot.get('buyer_info') and current_username:
+                if slot['status'] == 'available':
+                    seller_available_count += 1
+                elif slot['status'] == 'pending':
+                    seller_pending_count += 1
+                elif slot['status'] == 'sold':
+                    seller_sold_count += 1
+    
+    # Set user statistics based on perspective
+    if perspective == 'buyer':
+        user['reserved_count'] = buyer_reserved_count
+        user['sold_count'] = buyer_sold_count
+        user['owned_count'] = buyer_reserved_count + buyer_sold_count
+        user['pending_count'] = buyer_reserved_count
+        user['role'] = 'buyer'
+    else:
+        user['reserved_count'] = seller_pending_count
+        user['sold_count'] = seller_sold_count
+        user['owned_count'] = seller_available_count + seller_pending_count + seller_sold_count
+        user['pending_count'] = seller_pending_count
+        user['available_count'] = seller_available_count
+        user['role'] = 'seller'
+    
     return render_template('profile.html', user=user)
 
 @app.route('/map')
@@ -734,6 +767,13 @@ def extract_ids_from_recommendation(recommendation):
     if not flat_ids:
         flat_ids = [int(x) for x in re.findall(r'\b\d+\b', recommendation)]
     return sorted(set(flat_ids))
+
+@app.route('/logout')
+def logout():
+    # Clear all session data
+    session.clear()
+    flash('You have been successfully logged out.', 'success')
+    return redirect(url_for('home'))
 
 if __name__ == '__main__':
     try:
